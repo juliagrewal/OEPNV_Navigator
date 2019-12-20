@@ -14,6 +14,7 @@ import wada1028.info3.oepnv_navigator.R;
 
 public class GalleryFragment extends Fragment {
 
+
     private GalleryViewModel galleryViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
