@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="320dp"
+        android:layout_height="178dp"
+        android:layout_marginTop="57dp"
+        android:layout_marginBottom="6dp"
+        android:gravity="top"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/button_suche"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView_von"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="von"
+            android:textAllCaps="true"
+            android:textColor="#FFBB33"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="54dp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_Starthaltestelle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Starthaltestelle"
+            android:textAlignment="center"
+            tools:layout_editor_absoluteX="39dp"
+            tools:layout_editor_absoluteY="87dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="nach"
+            android:textAllCaps="true"
+            android:textColor="#FFBB33"
+            android:textStyle="bold" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_zielhaltestelle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Zielhaltestelle"
+            android:textAlignment="center"
+            tools:layout_editor_absoluteX="93dp"
+            tools:layout_editor_absoluteY="251dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_suche"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="152dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="162dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="162dp"
+        android:layout_marginBottom="376dp"
+        android:background="#FFBB33"
+        android:text="Suche"
+        android:textAllCaps="true"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
