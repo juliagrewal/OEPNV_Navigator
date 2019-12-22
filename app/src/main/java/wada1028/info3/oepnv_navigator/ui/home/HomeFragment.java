@@ -48,9 +48,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public static final String KEY_Ziel = "KEY_Ziel";
 
 
-
-    //private static final String[] STOPS = new String[]{"Europaplatz","Markplatz","Herrenstraße"};
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -99,6 +96,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             }
         });
+
 
 
         return root;

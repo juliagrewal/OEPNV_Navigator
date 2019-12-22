@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class Routing_Activity extends AppCompatActivity {
     RequestQueue queue_Routing;
     String startHalte = getIntent().getExtras().getString(HomeFragment.KEY_Start);
     String zielHalte = getIntent().getExtras().getString(HomeFragment.KEY_Ziel);
-    HashMap<Date,String> dateHashMap= new HashMap<>();
+    List<HashMap> journeyList = new ArrayList<HashMap>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,46 +49,93 @@ public class Routing_Activity extends AppCompatActivity {
         mapview = (MapView) findViewById(R.id.mapView);
         listView = (ListView) findViewById(R.id.listView_route);
         queue_Routing = Volley.newRequestQueue(this);
-
-        //Link bauen für Abfrage
-        //http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84[DD.DDDDD]&name_origin=Synagoge,Karlsruhe&type_destination=stop&name_destination=Schlossplatz, Durlach
-
-
-
-
-        // Jason Parsing
+        jsonParse();
 
 
         mapview.getMapAsync(new
 
-        OnMapReadyCallback() {
-                @Override
-                public void onMapReady(MapboxMap mapboxMap) {
+                                    OnMapReadyCallback() {
+                                        @Override
+                                        public void onMapReady(MapboxMap mapboxMap) {
 
-                }
-            });
+                                        }
+                                    });
         mapview.onCreate(savedInstanceState);
     }
 
-    private void jsonParse(AutoCompleteTextView aCTextView) {
+    private void jsonParse() {
+        //Link bauen für Abfrage
+        //http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84[DD.DDDDD]&name_origin=Synagoge,Karlsruhe&type_destination=stop&name_destination=Schlossplatz, Durlach
+
         String link_teil1 = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=";
         String link_teil2 = "&type_destination=stop&name_destination=";
         String fertigerLink = link_teil1 + startHalte + link_teil2 + zielHalte;
+
         final JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, fertigerLink, null, new Response.Listener<JSONObject>() {
+
             @Override
             public void onResponse(JSONObject response) {
                 //Log.i("METHODE", "in OnResponse");
                 try {
-                    JSONArray jsonArray = response.getJSONArray("journeys");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject parent = jsonArray.getJSONObject(i);
-                        String departureTimePlannedString= parent.getString("departureTimePlanned");
-                        String arrivalTimePlannedString = parent.getString("arrivalTimePlanned");
-                        JSONObject transportation = jsonArray.getJSONObject(i);
-                        String name = transportation.getString("name");
+                    JSONArray jsonJourneyArray = response.getJSONArray("journeys");
+                    for (int i = 0; i < jsonJourneyArray.length(); i++) {
+                        HashMap<String, HashMap> legHashMap = new HashMap<String, HashMap>();
+                        journeyList.add(legHashMap);
+                        JSONObject actJourney = (JSONObject) jsonJourneyArray.get(i);
+                        JSONArray jsonLegArray = actJourney.getJSONArray("legs");
+                        for (int j = 0; j < jsonLegArray.length(); j++) {
+                            HashMap<String, Float> legCoordMap = new HashMap<>();
+                            HashMap<String, String> legTimeMap = new HashMap<>();
+                            HashMap<String, String> legMeanOfTransMap = new HashMap<>();
+                            legHashMap.put("legTime", legTimeMap);
+                            legHashMap.put("coords", legCoordMap);
+                            legHashMap.put("transportation",legMeanOfTransMap);
+                            JSONObject actLeg = (JSONObject) jsonLegArray.get(i);
 
-                        dateHashMap.put(departureTimePlannedString,name);
-                        //Log.i("METHODE", "" + name);
+                            //Origin
+                            JSONObject actOrigin = (JSONObject) actLeg.getJSONObject("origin");
+                            String depTimeString = actOrigin.getString("departureTimePlanned");
+                            legTimeMap.put("departureTimePlanned", depTimeString);
+
+                            JSONArray depCoordArray = actOrigin.getJSONArray("coord");
+                            float depCoordX = (float) (depCoordArray.get(0));
+                            float depCoordY = (float) (depCoordArray.get(1));
+                            legTimeMap.put("depCoordX", String.valueOf(depCoordX));
+                            legTimeMap.put("depCoordY", String.valueOf(depCoordY));
+
+                            //Transportation (means of transportation)
+                            JSONObject transpArray = actLeg.getJSONObject("transportation");
+                            String meanOfTransString = transpArray.getString("name");
+                            legMeanOfTransMap.put("name", meanOfTransString);
+
+
+                            //Destination
+                            JSONObject actDestination = (JSONObject) actLeg.getJSONObject("destination");
+                            String desTimeString = actDestination.getString("arrivalTimePlanned");
+                            legTimeMap.put("arrivalTimePlanned", desTimeString);
+
+                            JSONArray desCoordArray = actDestination.getJSONArray("coord");
+                            float desCoordX = (float) (desCoordArray.get(0));
+                            float desCoordY = (float) (desCoordArray.get(1));
+                            legTimeMap.put("desCoordX", String.valueOf(desCoordX));
+                            legTimeMap.put("desCoordY", String.valueOf(desCoordY));
+
+                            String resTimeString = actDestination.getString("departureTimePlanned");
+                            legTimeMap.put("arrivalTimePlanned", desTimeString);
+
+                            //Coordinates for Map; Keys: X1,X2...;Y1,Y2...
+                            JSONArray coordArray = actLeg.getJSONArray("coords");
+                            for (int k = 0; k < coordArray.length(); k++) {
+                                JSONArray coord2Array = coordArray.getJSONArray(k);
+                                float coordLX = (float) (coord2Array.get(0));
+                                float coordLY = (float) (coord2Array.get(1));
+                                legCoordMap.put("X" + k, coordLX);
+                                legCoordMap.put("Y" + k, coordLY);
+                            }
+
+                        }
+
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

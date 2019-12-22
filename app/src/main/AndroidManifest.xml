@@ -17,9 +17,6 @@
         android:usesCleartextTraffic="true">
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService"/>
         <activity android:name=".ui.home.Routing_Activity">
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
         </activity>
         <activity
             android:name=".MainActivity"

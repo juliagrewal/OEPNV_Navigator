@@ -4,13 +4,4 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="263dp"
-        android:layout_height="535dp"
-        tools:layout_editor_absoluteX="34dp"
-        tools:layout_editor_absoluteY="44dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic[8]" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:layout_height="match_parent" />
