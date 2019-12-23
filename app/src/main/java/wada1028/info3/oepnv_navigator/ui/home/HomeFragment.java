@@ -36,27 +36,22 @@ import wada1028.info3.oepnv_navigator.R;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
-    private HomeViewModel homeViewModel;
     private List<String> halteList = new ArrayList<>();
-    private RequestQueue queue;
     private AutoCompleteTextView autoCompleteTextViewStart;
     private AutoCompleteTextView autoCompleteTextViewZiel;
-    private Button suchenButton;
     private String startHalt;
     private String zielHalt;
-    public static final String KEY_Start = "KEY_Start";
-    public static final String KEY_Ziel = "KEY_Ziel";
+    static final String KEY_Start = "KEY_Start";
+    static final String KEY_Ziel = "KEY_Ziel";
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        suchenButton = (Button)root.findViewById(R.id.button_suche);
+        Button suchenButton = (Button) root.findViewById(R.id.button_suche);
         suchenButton.setOnClickListener(this);
         autoCompleteTextViewStart = root.findViewById(R.id.autoCompleteTextView_Starthaltestelle);
         autoCompleteTextViewZiel = root.findViewById(R.id.autoCompleteTextView_zielhaltestelle);
-        startHalt = autoCompleteTextViewStart.getText().toString();
-        zielHalt = autoCompleteTextViewZiel.getText().toString();
 
 
         autoCompleteTextViewStart.addTextChangedListener(new TextWatcher() {
@@ -104,7 +99,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void jsonParse(AutoCompleteTextView aCTextView) {
         Log.i("METHODE", "in jsonParse");
-        queue = Volley.newRequestQueue(getContext());
+        RequestQueue queue = Volley.newRequestQueue(getContext());
         String url = "http://smartmmi.demo.mentz.net/smartmmi/XML_STOPFINDER_REQUEST?outputFormat=rapidJson&type_sf=any&name_sf=" + aCTextView.getText().toString();
         final JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -139,6 +134,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        //startHalt = autoCompleteTextViewStart.getText().toString();
+        //zielHalt = autoCompleteTextViewZiel.getText().toString();
+        startHalt = "Hauptbahnhof, Karlsruhe";
+        zielHalt = "Karlsruhe, Lessingstraße";
         Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),Routing_Activity.class);
         intentHalte.putExtra("KEY_Start",startHalt);
         intentHalte.putExtra("KEY_Ziel",zielHalt);

@@ -33,27 +33,31 @@ import java.util.List;
 
 import wada1028.info3.oepnv_navigator.R;
 
+import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.*;
+import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.KEY_Ziel;
+
 public class Routing_Activity extends AppCompatActivity {
     private MapView mapview;
     ListView listView;
     RequestQueue queue_Routing;
-    String startHalte = getIntent().getExtras().getString(HomeFragment.KEY_Start);
-    String zielHalte = getIntent().getExtras().getString(HomeFragment.KEY_Ziel);
-    List<HashMap> journeyList = new ArrayList<HashMap>();
+    String startHalte;
+    String zielHalte;
+    List<HashMap> journeyList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapboxAccountManager.start(this, getString(R.string.access_token));
         setContentView(R.layout.activity_routing_);
-        mapview = (MapView) findViewById(R.id.mapView);
-        listView = (ListView) findViewById(R.id.listView_route);
+        mapview = findViewById(R.id.mapView);
+        listView = findViewById(R.id.listView_route);
         queue_Routing = Volley.newRequestQueue(this);
+        startHalte = getIntent().getStringExtra(KEY_Start);
+        zielHalte = getIntent().getStringExtra(KEY_Ziel);
         jsonParse();
 
 
         mapview.getMapAsync(new
-
                                     OnMapReadyCallback() {
                                         @Override
                                         public void onMapReady(MapboxMap mapboxMap) {
@@ -79,7 +83,7 @@ public class Routing_Activity extends AppCompatActivity {
                 try {
                     JSONArray jsonJourneyArray = response.getJSONArray("journeys");
                     for (int i = 0; i < jsonJourneyArray.length(); i++) {
-                        HashMap<String, HashMap> legHashMap = new HashMap<String, HashMap>();
+                        HashMap<String, HashMap> legHashMap = new HashMap<>();
                         journeyList.add(legHashMap);
                         JSONObject actJourney = (JSONObject) jsonJourneyArray.get(i);
                         JSONArray jsonLegArray = actJourney.getJSONArray("legs");
@@ -93,7 +97,7 @@ public class Routing_Activity extends AppCompatActivity {
                             JSONObject actLeg = (JSONObject) jsonLegArray.get(i);
 
                             //Origin
-                            JSONObject actOrigin = (JSONObject) actLeg.getJSONObject("origin");
+                            JSONObject actOrigin = actLeg.getJSONObject("origin");
                             String depTimeString = actOrigin.getString("departureTimePlanned");
                             legTimeMap.put("departureTimePlanned", depTimeString);
 
@@ -110,7 +114,7 @@ public class Routing_Activity extends AppCompatActivity {
 
 
                             //Destination
-                            JSONObject actDestination = (JSONObject) actLeg.getJSONObject("destination");
+                            JSONObject actDestination = actLeg.getJSONObject("destination");
                             String desTimeString = actDestination.getString("arrivalTimePlanned");
                             legTimeMap.put("arrivalTimePlanned", desTimeString);
 
