@@ -25,7 +25,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,9 +73,25 @@ public class Routing_Activity extends AppCompatActivity {
         //Link bauen für Abfrage
         //http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84[DD.DDDDD]&name_origin=Synagoge,Karlsruhe&type_destination=stop&name_destination=Schlossplatz, Durlach
 
-        String link_teil1 = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=";
+        String link_teil1 = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84%5bDD.DDDDD%5d&name_origin=";
         String link_teil2 = "&type_destination=stop&name_destination=";
+        try {
+            startHalte = URLEncoder.encode(startHalte,"UTF-8");
+            startHalte = startHalte.replace("+","%20");
+            startHalte = startHalte.replace("%2C",",");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        try {
+            zielHalte = URLEncoder.encode(zielHalte,"UTF-8");
+            zielHalte = zielHalte.replace("+","%20");
+            zielHalte = zielHalte.replace("%2C",",");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         String fertigerLink = link_teil1 + startHalte + link_teil2 + zielHalte;
+        Log.i("DANI",""+fertigerLink);
 
         final JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, fertigerLink, null, new Response.Listener<JSONObject>() {
 

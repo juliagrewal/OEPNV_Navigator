@@ -109,10 +109,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     JSONArray jsonArray = response.getJSONArray("locations");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject location = jsonArray.getJSONObject(i);
-                        //String id = location.getString("id");
-                        String name = location.getString("name");
-                        //String type =location.getString("type");
-                        halteList.add(name);
+                        String name = location.getString("disassembledName");
+                        JSONObject parent = location.getJSONObject("parent");
+                        String city = parent.getString("name");
+                        halteList.add(name+", "+city);
                         Log.i("METHODE", "" + name);
                     }
                 } catch (JSONException e) {
@@ -134,10 +134,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        //startHalt = autoCompleteTextViewStart.getText().toString();
-        //zielHalt = autoCompleteTextViewZiel.getText().toString();
-        startHalt = "Hauptbahnhof, Karlsruhe";
-        zielHalt = "Karlsruhe, Lessingstraße";
+        startHalt = autoCompleteTextViewStart.getText().toString();
+        zielHalt = autoCompleteTextViewZiel.getText().toString();
+        //startHalt = "Synagoge, Karlsruhe";
+        //zielHalt = "Schlossplatz, Durlach";
         Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),Routing_Activity.class);
         intentHalte.putExtra("KEY_Start",startHalt);
         intentHalte.putExtra("KEY_Ziel",zielHalt);
