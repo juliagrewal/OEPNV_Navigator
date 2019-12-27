@@ -134,10 +134,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        startHalt = autoCompleteTextViewStart.getText().toString();
-        zielHalt = autoCompleteTextViewZiel.getText().toString();
-        //startHalt = "Synagoge, Karlsruhe";
-        //zielHalt = "Schlossplatz, Durlach";
+        //startHalt = autoCompleteTextViewStart.getText().toString();
+        //zielHalt = autoCompleteTextViewZiel.getText().toString();
+        startHalt = "Synagoge, Karlsruhe";
+        zielHalt = "Schlossplatz, Durlach";
         Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),Routing_Activity.class);
         intentHalte.putExtra("KEY_Start",startHalt);
         intentHalte.putExtra("KEY_Ziel",zielHalt);

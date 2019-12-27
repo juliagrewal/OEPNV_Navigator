@@ -28,10 +28,14 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import wada1028.info3.oepnv_navigator.R;
 
@@ -45,6 +49,7 @@ public class Routing_Activity extends AppCompatActivity {
     String startHalte;
     String zielHalte;
     List<HashMap> journeyList = new ArrayList<>();
+    List<List> connectionList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,14 @@ public class Routing_Activity extends AppCompatActivity {
         queue_Routing = Volley.newRequestQueue(this);
         startHalte = getIntent().getStringExtra(KEY_Start);
         zielHalte = getIntent().getStringExtra(KEY_Ziel);
+
+        //ListView Filling
+        //Date:
+        //TestDate: "2019-12-24T10:39:00Z"
+
+        String testDateString = "2019-12-24T10:39:07Z";
+        String testStringDate = dateParse(testDateString);
+        Log.i("DANI",testStringDate);
         jsonParse();
 
 
@@ -67,7 +80,10 @@ public class Routing_Activity extends AppCompatActivity {
                                         }
                                     });
         mapview.onCreate(savedInstanceState);
+
     }
+
+
 
     private void jsonParse() {
         //Link bauen für Abfrage
@@ -106,7 +122,7 @@ public class Routing_Activity extends AppCompatActivity {
                         JSONObject actJourney = (JSONObject) jsonJourneyArray.get(i);
                         JSONArray jsonLegArray = actJourney.getJSONArray("legs");
                         for (int j = 0; j < jsonLegArray.length(); j++) {
-                            HashMap<String, Float> legCoordMap = new HashMap<>();
+                            HashMap<String, Double> legCoordMap = new HashMap<>();
                             HashMap<String, String> legTimeMap = new HashMap<>();
                             HashMap<String, String> legMeanOfTransMap = new HashMap<>();
                             legHashMap.put("legTime", legTimeMap);
@@ -120,10 +136,10 @@ public class Routing_Activity extends AppCompatActivity {
                             legTimeMap.put("departureTimePlanned", depTimeString);
 
                             JSONArray depCoordArray = actOrigin.getJSONArray("coord");
-                            float depCoordX = (float) (depCoordArray.get(0));
-                            float depCoordY = (float) (depCoordArray.get(1));
-                            legTimeMap.put("depCoordX", String.valueOf(depCoordX));
-                            legTimeMap.put("depCoordY", String.valueOf(depCoordY));
+                            double depCoordX = (double)(depCoordArray.get(0));
+                            double depCoordY = (double) depCoordArray.get(1);
+                            legCoordMap.put("depCoordX", depCoordX);
+                            legCoordMap.put("depCoordY", depCoordY);
 
                             //Transportation (means of transportation)
                             JSONObject transpArray = actLeg.getJSONObject("transportation");
@@ -137,20 +153,18 @@ public class Routing_Activity extends AppCompatActivity {
                             legTimeMap.put("arrivalTimePlanned", desTimeString);
 
                             JSONArray desCoordArray = actDestination.getJSONArray("coord");
-                            float desCoordX = (float) (desCoordArray.get(0));
-                            float desCoordY = (float) (desCoordArray.get(1));
-                            legTimeMap.put("desCoordX", String.valueOf(desCoordX));
-                            legTimeMap.put("desCoordY", String.valueOf(desCoordY));
+                            double desCoordX = (double) (desCoordArray.get(0));
+                            double desCoordY = (double) (desCoordArray.get(1));
+                            legCoordMap.put("desCoordX", desCoordX);
+                            legCoordMap.put("desCoordY", desCoordY);
 
-                            String resTimeString = actDestination.getString("departureTimePlanned");
-                            legTimeMap.put("arrivalTimePlanned", desTimeString);
 
                             //Coordinates for Map; Keys: X1,X2...;Y1,Y2...
                             JSONArray coordArray = actLeg.getJSONArray("coords");
                             for (int k = 0; k < coordArray.length(); k++) {
                                 JSONArray coord2Array = coordArray.getJSONArray(k);
-                                float coordLX = (float) (coord2Array.get(0));
-                                float coordLY = (float) (coord2Array.get(1));
+                                double coordLX = (double) (coord2Array.get(0));
+                                double coordLY = (double) (coord2Array.get(1));
                                 legCoordMap.put("X" + k, coordLX);
                                 legCoordMap.put("Y" + k, coordLY);
                             }
@@ -173,6 +187,22 @@ public class Routing_Activity extends AppCompatActivity {
         });
         queue_Routing.add(objectRequest);
     }
+
+    private static String dateParse (String dateString){
+        Date dateDate = null;
+        String resultString = "";
+        try {
+            SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss'Z'");
+            dateSDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+            dateDate = dateSDF.parse(dateString);
+            SimpleDateFormat stringSDF = new SimpleDateFormat("kk:mm");
+            resultString = stringSDF.format(dateDate);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return resultString;
+        }
 
     @Override
     protected void onResume() {
