@@ -51,9 +51,9 @@ public class Routing_Activity extends AppCompatActivity {
     String zielHalte;
     List<HashMap> journeyList = new ArrayList<>();
     CustomListAdapter customListAdapter;
-    List<List> connectionList = new ArrayList<>();
-    String[] departureArray;
-    String[] arrivalArray;
+    //List<List> connectionList = new ArrayList<>();
+    //String[] departureArray;
+    //String[] arrivalArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +68,10 @@ public class Routing_Activity extends AppCompatActivity {
         startHalte = getIntent().getStringExtra(KEY_Start);
         zielHalte = getIntent().getStringExtra(KEY_Ziel);
 
-        jsonParse();
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
+
+        jsonParse();
 
         //Date:
         //TestDate: "2019-12-24T10:39:00Z"
