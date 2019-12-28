@@ -6,18 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.Routing_Activity">
 
-    <ListView
-        android:id="@+id/listView_route"
-        android:layout_width="415dp"
-        android:layout_height="359dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapView" />
-
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="421dp"
@@ -28,4 +16,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/listView_route"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/listView_route"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

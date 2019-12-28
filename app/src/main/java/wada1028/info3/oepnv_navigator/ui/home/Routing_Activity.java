@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import wada1028.info3.oepnv_navigator.CustomListAdapter;
 import wada1028.info3.oepnv_navigator.R;
 
 import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.*;
@@ -49,7 +50,10 @@ public class Routing_Activity extends AppCompatActivity {
     String startHalte;
     String zielHalte;
     List<HashMap> journeyList = new ArrayList<>();
+    CustomListAdapter customListAdapter;
     List<List> connectionList = new ArrayList<>();
+    String[] departureArray;
+    String[] arrivalArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +62,23 @@ public class Routing_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_routing_);
         mapview = findViewById(R.id.mapView);
         listView = findViewById(R.id.listView_route);
+
+
         queue_Routing = Volley.newRequestQueue(this);
         startHalte = getIntent().getStringExtra(KEY_Start);
         zielHalte = getIntent().getStringExtra(KEY_Ziel);
 
-        //ListView Filling
+        jsonParse();
+        customListAdapter = new CustomListAdapter(this, journeyList);
+        listView.setAdapter(customListAdapter);
+
         //Date:
         //TestDate: "2019-12-24T10:39:00Z"
 
-        String testDateString = "2019-12-24T10:39:07Z";
+        /*String testDateString = "2019-12-24T10:39:07Z";
         String testStringDate = dateParse(testDateString);
-        Log.i("DANI",testStringDate);
-        jsonParse();
+        Log.i("DANI",testStringDate);*/
+
 
 
         mapview.getMapAsync(new
@@ -117,46 +126,46 @@ public class Routing_Activity extends AppCompatActivity {
                 try {
                     JSONArray jsonJourneyArray = response.getJSONArray("journeys");
                     for (int i = 0; i < jsonJourneyArray.length(); i++) {
-                        HashMap<String, HashMap> legHashMap = new HashMap<>();
-                        journeyList.add(legHashMap);
+                        HashMap<String, HashMap> journeyHashMap = new HashMap<>();
+                        journeyList.add(journeyHashMap);
                         JSONObject actJourney = (JSONObject) jsonJourneyArray.get(i);
                         JSONArray jsonLegArray = actJourney.getJSONArray("legs");
                         for (int j = 0; j < jsonLegArray.length(); j++) {
                             HashMap<String, Double> legCoordMap = new HashMap<>();
                             HashMap<String, String> legTimeMap = new HashMap<>();
                             HashMap<String, String> legMeanOfTransMap = new HashMap<>();
-                            legHashMap.put("legTime", legTimeMap);
-                            legHashMap.put("coords", legCoordMap);
-                            legHashMap.put("transportation",legMeanOfTransMap);
+                            journeyHashMap.put("legTime", legTimeMap);
+                            journeyHashMap.put("coords", legCoordMap);
+                            journeyHashMap.put("transportation",legMeanOfTransMap);
                             JSONObject actLeg = (JSONObject) jsonLegArray.get(i);
 
                             //Origin
                             JSONObject actOrigin = actLeg.getJSONObject("origin");
                             String depTimeString = actOrigin.getString("departureTimePlanned");
-                            legTimeMap.put("departureTimePlanned", depTimeString);
+                            legTimeMap.put("departureTimePlanned"+j, depTimeString);
 
                             JSONArray depCoordArray = actOrigin.getJSONArray("coord");
                             double depCoordX = (double)(depCoordArray.get(0));
                             double depCoordY = (double) depCoordArray.get(1);
-                            legCoordMap.put("depCoordX", depCoordX);
-                            legCoordMap.put("depCoordY", depCoordY);
+                            legCoordMap.put("depCoordX"+j, depCoordX);
+                            legCoordMap.put("depCoordY"+j, depCoordY);
 
                             //Transportation (means of transportation)
                             JSONObject transpArray = actLeg.getJSONObject("transportation");
                             String meanOfTransString = transpArray.getString("name");
-                            legMeanOfTransMap.put("name", meanOfTransString);
+                            legMeanOfTransMap.put("name"+j, meanOfTransString);
 
 
                             //Destination
                             JSONObject actDestination = actLeg.getJSONObject("destination");
                             String desTimeString = actDestination.getString("arrivalTimePlanned");
-                            legTimeMap.put("arrivalTimePlanned", desTimeString);
+                            legTimeMap.put("arrivalTimePlanned"+j, desTimeString);
 
                             JSONArray desCoordArray = actDestination.getJSONArray("coord");
                             double desCoordX = (double) (desCoordArray.get(0));
                             double desCoordY = (double) (desCoordArray.get(1));
-                            legCoordMap.put("desCoordX", desCoordX);
-                            legCoordMap.put("desCoordY", desCoordY);
+                            legCoordMap.put("desCoordX"+j, desCoordX);
+                            legCoordMap.put("desCoordY"+j, desCoordY);
 
 
                             //Coordinates for Map; Keys: X1,X2...;Y1,Y2...
@@ -171,12 +180,13 @@ public class Routing_Activity extends AppCompatActivity {
 
                         }
 
-
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.i("METHODE", "in catch");
                 }
+                customListAdapter.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -188,7 +198,7 @@ public class Routing_Activity extends AppCompatActivity {
         queue_Routing.add(objectRequest);
     }
 
-    private static String dateParse (String dateString){
+    public static String dateParse (String dateString){
         Date dateDate = null;
         String resultString = "";
         try {
