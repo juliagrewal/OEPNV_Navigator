@@ -12,6 +12,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -44,24 +45,21 @@ import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.*;
 import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.KEY_Ziel;
 
 public class Routing_Activity extends AppCompatActivity {
-    private MapView mapview;
-    ListView listView;
     RequestQueue queue_Routing;
     String startHalte;
     String zielHalte;
+    MapView mapview;
     List<HashMap> journeyList = new ArrayList<>();
     CustomListAdapter customListAdapter;
-    //List<List> connectionList = new ArrayList<>();
-    //String[] departureArray;
-    //String[] arrivalArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapboxAccountManager.start(this, getString(R.string.access_token));
         setContentView(R.layout.activity_routing_);
-        mapview = findViewById(R.id.mapView);
-        listView = findViewById(R.id.listView_route);
+        ListView listView = (ListView)findViewById(R.id.listView_route);
+        mapview = (MapView)findViewById(R.id.mapView);
+
 
 
         queue_Routing = Volley.newRequestQueue(this);
@@ -131,15 +129,14 @@ public class Routing_Activity extends AppCompatActivity {
                         journeyList.add(journeyHashMap);
                         JSONObject actJourney = (JSONObject) jsonJourneyArray.get(i);
                         JSONArray jsonLegArray = actJourney.getJSONArray("legs");
+                        HashMap<String, Double> legCoordMap = new HashMap<>();
+                        HashMap<String, String> legTimeMap = new HashMap<>();
+                        HashMap<String, String> legMeanOfTransMap = new HashMap<>();
+                        journeyHashMap.put("legTime", legTimeMap);
+                        journeyHashMap.put("coords", legCoordMap);
+                        journeyHashMap.put("transportation",legMeanOfTransMap);
                         for (int j = 0; j < jsonLegArray.length(); j++) {
-                            HashMap<String, Double> legCoordMap = new HashMap<>();
-                            HashMap<String, String> legTimeMap = new HashMap<>();
-                            HashMap<String, String> legMeanOfTransMap = new HashMap<>();
-                            journeyHashMap.put("legTime", legTimeMap);
-                            journeyHashMap.put("coords", legCoordMap);
-                            journeyHashMap.put("transportation",legMeanOfTransMap);
-                            JSONObject actLeg = (JSONObject) jsonLegArray.get(i);
-
+                            JSONObject actLeg = (JSONObject) jsonLegArray.get(j);
                             //Origin
                             JSONObject actOrigin = actLeg.getJSONObject("origin");
                             String depTimeString = actOrigin.getString("departureTimePlanned");
@@ -185,15 +182,30 @@ public class Routing_Activity extends AppCompatActivity {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Log.i("METHODE", "in catch");
+                    Log.e("METHODE", "in catch");
                 }
                 customListAdapter.notifyDataSetChanged();
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Log.i("METHODE", "Error: no connection");
+                Log.e("METHODE", "Error: no connection");
+            }
+
+        });
+        objectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 30000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 0;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
             }
         });
         queue_Routing.add(objectRequest);

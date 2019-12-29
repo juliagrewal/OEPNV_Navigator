@@ -21,7 +21,7 @@ import wada1028.info3.oepnv_navigator.ui.home.Routing_Activity;
 
 
 public class CustomListAdapter extends ArrayAdapter <HashMap> {
-    //to reference teh activity
+
         private List<HashMap> journeyList;
 
 
