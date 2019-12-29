@@ -45,6 +45,8 @@ import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.*;
 import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.KEY_Ziel;
 
 public class Routing_Activity extends AppCompatActivity {
+    public static String startHalteString;
+    public static String zielHalteString;
     RequestQueue queue_Routing;
     String startHalte;
     String zielHalte;
@@ -63,13 +65,16 @@ public class Routing_Activity extends AppCompatActivity {
 
 
         queue_Routing = Volley.newRequestQueue(this);
-        startHalte = getIntent().getStringExtra(KEY_Start);
+        startHalte= getIntent().getStringExtra(KEY_Start);
         zielHalte = getIntent().getStringExtra(KEY_Ziel);
 
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
 
         jsonParse();
+        //Für Ausgabe:
+        startHalteString = startHalte;
+        zielHalteString = zielHalte;
 
         //Date:
         //TestDate: "2019-12-24T10:39:00Z"
