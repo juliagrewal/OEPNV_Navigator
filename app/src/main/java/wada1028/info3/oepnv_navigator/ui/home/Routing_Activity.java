@@ -71,10 +71,13 @@ public class Routing_Activity extends AppCompatActivity {
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
 
-        jsonParse();
         //Für Ausgabe:
         startHalteString = startHalte;
         zielHalteString = zielHalte;
+
+        jsonParse();
+
+
 
         //Date:
         //TestDate: "2019-12-24T10:39:00Z"

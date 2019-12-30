@@ -58,7 +58,10 @@ public class CustomListAdapter extends ArrayAdapter <HashMap> {
         textViewDepLoc.setText(Routing_Activity.startHalteString);
         //Transportation
         for(int i =0;i<lengthTransHashMap;i++){
-            transportModes = transportModes + transHashMap.get("name"+i) + ", ";
+            if(i>0){
+                transportModes = ", " + transportModes;
+            }
+            transportModes = transportModes + transHashMap.get("name"+i);
         }
         textViewTransport.setText(transportModes);
 
