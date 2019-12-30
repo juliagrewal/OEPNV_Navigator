@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
@@ -18,6 +20,9 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -44,15 +49,18 @@ import wada1028.info3.oepnv_navigator.R;
 import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.*;
 import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.KEY_Ziel;
 
-public class Routing_Activity extends AppCompatActivity {
+public class Routing_Activity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     public static String startHalteString;
     public static String zielHalteString;
     RequestQueue queue_Routing;
     String startHalte;
     String zielHalte;
     MapView mapview;
+    Marker markerDep;
     List<HashMap> journeyList = new ArrayList<>();
     CustomListAdapter customListAdapter;
+    double xCoordinate=0;
+    double yCoordinate=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +78,8 @@ public class Routing_Activity extends AppCompatActivity {
 
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
+        listView.setClickable(true);
+        listView.setOnItemClickListener(this);
 
         //Für Ausgabe:
         startHalteString = startHalte;
@@ -92,7 +102,14 @@ public class Routing_Activity extends AppCompatActivity {
                                     OnMapReadyCallback() {
                                         @Override
                                         public void onMapReady(MapboxMap mapboxMap) {
-
+                                            mapboxMap.getUiSettings().setZoomControlsEnabled(true);
+                                            mapboxMap.getUiSettings().setCompassEnabled(true);
+                                            mapboxMap.getUiSettings().setAllGesturesEnabled(true);
+                                            mapboxMap.setCameraPosition( new CameraPosition.Builder()
+                                                    .zoom(12)
+                                                    .target(new LatLng(49.0123444, 8.3859373))
+                                                    .tilt(10)
+                                                    .build());
                                         }
                                     });
         mapview.onCreate(savedInstanceState);
@@ -263,5 +280,19 @@ public class Routing_Activity extends AppCompatActivity {
     public void onLowMemory() {
         super.onLowMemory();
         mapview.onLowMemory();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.i("DAANI","in OnClick");
+    final HashMap coordHashMap = (HashMap) journeyList.get(position).get("coords");
+    int sizeCoordHashMap = coordHashMap.size();
+    for(int i = 0; i<sizeCoordHashMap/2;i++) {
+        xCoordinate = (double) coordHashMap.get("X" + i);
+        yCoordinate = (double) coordHashMap.get("Y" + i);
+    }//TODO draw markers in map
+        double XCoordinateDep = (double) coordHashMap.get("X0"))
+        markerDep = new Marker("my Marker","",
+        mapview.addMarker()
     }
 }
