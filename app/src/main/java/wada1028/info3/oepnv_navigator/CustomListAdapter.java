@@ -59,7 +59,7 @@ public class CustomListAdapter extends ArrayAdapter <HashMap> {
         //Transportation
         for(int i =0;i<lengthTransHashMap;i++){
             if(i>0){
-                transportModes = ", " + transportModes;
+                transportModes = transportModes + ", ";
             }
             transportModes = transportModes + transHashMap.get("name"+i);
         }
