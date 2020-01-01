@@ -2,6 +2,7 @@ package wada1028.info3.oepnv_navigator.ui.home;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -284,7 +285,10 @@ public class Routing_Activity extends AppCompatActivity implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.i("DAANI","in OnClick");
+        /*Intent mapInetnet = new Intent(Routing_Activity.this,map_activity.class);
+        startActivity(mapInetnet);
+*/
+     /*   Log.i("DAANI","in OnClick");
     final HashMap coordHashMap = (HashMap) journeyList.get(position).get("coords");
     int sizeCoordHashMap = coordHashMap.size();
     for(int i = 0; i<sizeCoordHashMap/2;i++) {
@@ -293,6 +297,6 @@ public class Routing_Activity extends AppCompatActivity implements AdapterView.O
     }//TODO draw markers in map
         double XCoordinateDep = (double) coordHashMap.get("X0"))
         markerDep = new Marker("my Marker","",
-        mapview.addMarker()
+        mapview.addMarker()*/
     }
 }
