@@ -41,13 +41,17 @@ import java.util.TimeZone;
 import wada1028.info3.oepnv_navigator.CustomListAdapter;
 import wada1028.info3.oepnv_navigator.R;
 
-import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.*;
-import static wada1028.info3.oepnv_navigator.ui.home.HomeFragment.KEY_Ziel;
-
 public class Routing_Activity extends AppCompatActivity {
     RequestQueue queue_Routing;
-    String startHalte;
-    String zielHalte;
+    public static String startHalte;
+    public static String zielHalte;
+    public static String startHalteID;
+    public static String zielHalteID;
+    public static final String KEY_Start = "StartName";
+    public static final String KEY_Ziel  = "ZielName";
+    public static final String KEY_Start_ID   = "StartId";
+    public static final String KEY_Ziel_ID    = "ZielId";
+
     MapView mapview;
     List<HashMap> journeyList = new ArrayList<>();
     CustomListAdapter customListAdapter;
@@ -65,6 +69,8 @@ public class Routing_Activity extends AppCompatActivity {
         queue_Routing = Volley.newRequestQueue(this);
         startHalte = getIntent().getStringExtra(KEY_Start);
         zielHalte = getIntent().getStringExtra(KEY_Ziel);
+        startHalteID = getIntent().getStringExtra(KEY_Start_ID);
+        zielHalteID = getIntent().getStringExtra(KEY_Ziel_ID);
 
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
@@ -99,22 +105,22 @@ public class Routing_Activity extends AppCompatActivity {
 
         String link_teil1 = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84%5bDD.DDDDD%5d&name_origin=";
         String link_teil2 = "&type_destination=stop&name_destination=";
-        try {
-            startHalte = URLEncoder.encode(startHalte,"UTF-8");
-            startHalte = startHalte.replace("+","%20");
-            startHalte = startHalte.replace("%2C",",");
+        String startHalteParam = "Error";
+        String zielHalteParam = "Error";
+        try{
+            startHalteParam = URLEncoder.encode(startHalteID,"UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            Log.e("DANI","Can not encode startHalteID");
         }
-        try {
-            zielHalte = URLEncoder.encode(zielHalte,"UTF-8");
-            zielHalte = zielHalte.replace("+","%20");
-            zielHalte = zielHalte.replace("%2C",",");
+        try{
+            zielHalteParam = URLEncoder.encode(zielHalteID,"UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            Log.e("DANI","Can not encode ZielHalteID");
         }
 
-        String fertigerLink = link_teil1 + startHalte + link_teil2 + zielHalte;
+        String fertigerLink = link_teil1 + startHalteParam + link_teil2 + zielHalteParam;
         Log.i("DANI",""+fertigerLink);
 
         final JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, fertigerLink, null, new Response.Listener<JSONObject>() {
@@ -135,35 +141,42 @@ public class Routing_Activity extends AppCompatActivity {
                         journeyHashMap.put("legTime", legTimeMap);
                         journeyHashMap.put("coords", legCoordMap);
                         journeyHashMap.put("transportation",legMeanOfTransMap);
-                        for (int j = 0; j < jsonLegArray.length(); j++) {
-                            JSONObject actLeg = (JSONObject) jsonLegArray.get(j);
+                        int index = 0;
+                        for (int legNumber = 0; legNumber < jsonLegArray.length(); legNumber++) {
+                            JSONObject actLeg = (JSONObject) jsonLegArray.get(legNumber);
                             //Origin
                             JSONObject actOrigin = actLeg.getJSONObject("origin");
                             String depTimeString = actOrigin.getString("departureTimePlanned");
-                            legTimeMap.put("departureTimePlanned"+j, depTimeString);
+                            legTimeMap.put("departureTimePlanned"+legNumber, depTimeString);
 
                             JSONArray depCoordArray = actOrigin.getJSONArray("coord");
                             double depCoordX = (double)(depCoordArray.get(0));
                             double depCoordY = (double) depCoordArray.get(1);
-                            legCoordMap.put("depCoordX"+j, depCoordX);
-                            legCoordMap.put("depCoordY"+j, depCoordY);
+                            legCoordMap.put("depCoordX"+legNumber, depCoordX);
+                            legCoordMap.put("depCoordY"+legNumber, depCoordY);
 
                             //Transportation (means of transportation)
                             JSONObject transpArray = actLeg.getJSONObject("transportation");
-                            String meanOfTransString = transpArray.getString("name");
-                            legMeanOfTransMap.put("name"+j, meanOfTransString);
+                            String meanOfTransString="error";
+                            if (transpArray.has("name")) {
+                                meanOfTransString = transpArray.getString("name");
+                            } else {
+                                JSONObject product = transpArray.getJSONObject("product");
+                                meanOfTransString = product.getString("name");
+                            }
+                            legMeanOfTransMap.put("name"+legNumber, meanOfTransString);
 
 
                             //Destination
                             JSONObject actDestination = actLeg.getJSONObject("destination");
                             String desTimeString = actDestination.getString("arrivalTimePlanned");
-                            legTimeMap.put("arrivalTimePlanned"+j, desTimeString);
+                            legTimeMap.put("arrivalTimePlanned"+legNumber, desTimeString);
 
                             JSONArray desCoordArray = actDestination.getJSONArray("coord");
                             double desCoordX = (double) (desCoordArray.get(0));
                             double desCoordY = (double) (desCoordArray.get(1));
-                            legCoordMap.put("desCoordX"+j, desCoordX);
-                            legCoordMap.put("desCoordY"+j, desCoordY);
+                            legCoordMap.put("desCoordX"+legNumber, desCoordX);
+                            legCoordMap.put("desCoordY"+legNumber, desCoordY);
 
 
                             //Coordinates for Map; Keys: X1,X2...;Y1,Y2...
@@ -172,8 +185,9 @@ public class Routing_Activity extends AppCompatActivity {
                                 JSONArray coord2Array = coordArray.getJSONArray(k);
                                 double coordLX = (double) (coord2Array.get(0));
                                 double coordLY = (double) (coord2Array.get(1));
-                                legCoordMap.put("X" + k, coordLX);
-                                legCoordMap.put("Y" + k, coordLY);
+                                legCoordMap.put("X" + index, coordLX);
+                                legCoordMap.put("Y" + index, coordLY);
+                                index++;
                             }
 
                         }
