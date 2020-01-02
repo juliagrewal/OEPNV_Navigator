@@ -41,24 +41,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import wada1028.info3.oepnv_navigator.CustomLegListAdapter;
 import wada1028.info3.oepnv_navigator.CustomListAdapter;
+import wada1028.info3.oepnv_navigator.Leg;
 import wada1028.info3.oepnv_navigator.R;
 
 public class Routing_Activity extends AppCompatActivity {
-    RequestQueue queue_Routing;
+    public static String KEY_JourneyPosition = "JourneyPosition";
     public static String startHalte;
     public static String zielHalte;
     public static String startHalteID;
-    public static String zielHalteID;
-    public static final String KEY_Start = "StartName";
-    public static final String KEY_Ziel  = "ZielName";
-    public static final String KEY_Start_ID   = "StartId";
-    public static final String KEY_Ziel_ID    = "ZielId";
 
 
     MapView mapview;
-    //List<HashMap> journeyList = new ArrayList<>();
-    //CustomListAdapter customListAdapter;
+    CustomLegListAdapter customLegListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,27 +64,37 @@ public class Routing_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         MapboxAccountManager.start(this, getString(R.string.access_token));
         setContentView(R.layout.activity_routing_);
-        ListView listView = (ListView)findViewById(R.id.listView_route);
+        ListView listView = (ListView)findViewById(R.id.leg_listView_route);
         mapview = (MapView)findViewById(R.id.mapView);
 
+        List<Leg> legList = new ArrayList<Leg>();
+        int position = getIntent().getIntExtra(KEY_JourneyPosition,0);
+        // Calling Application class (see application tag in AndroidManifest.xml)
+        final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
+        List<HashMap> journeyList = globalApplication.getJourneyList();
+        HashMap actJourney = journeyList.get(position);
+
+        HashMap actLegTimeMap =(HashMap) actJourney.get("legTime");
+        HashMap actTransMode = (HashMap) actJourney.get("transportation");
+        HashMap actNames = (HashMap) actJourney.get("stopNames");
+
+        int numberOfLegs = (actLegTimeMap.size()/2)-1;
+        for(int legIndex =0;legIndex<numberOfLegs;legIndex++){
+            Leg actLeg = new Leg();
+            actLeg.depTime = (String) actLegTimeMap.get("departureTimePlanned"+legIndex);
+            actLeg.depName = (String) actNames.get("departureName"+legIndex);
+            actLeg.transMode = (String) actTransMode.get("name"+legIndex);
+            actLeg.desTime = (String) actLegTimeMap.get("arrivalTimePlanned"+legIndex);
+            actLeg.desName = (String) actNames.get("arrivalName"+legIndex);
+            legList.add(actLeg);
+        }
 
 
-       /* queue_Routing = Volley.newRequestQueue(this);
-        startHalte = getIntent().getStringExtra(KEY_Start);
-        zielHalte = getIntent().getStringExtra(KEY_Ziel);
-        startHalteID = getIntent().getStringExtra(KEY_Start_ID);
-        zielHalteID = getIntent().getStringExtra(KEY_Ziel_ID);*/
 
-        /*customListAdapter = new CustomListAdapter(this, journeyList);
-        listView.setAdapter(customListAdapter);
-        jsonParse();*/
 
-        //Date:
-        //TestDate: "2019-12-24T10:39:00Z"
 
-        /*String testDateString = "2019-12-24T10:39:07Z";
-        String testStringDate = dateParse(testDateString);
-        Log.i("DANI",testStringDate);*/
+        customLegListAdapter = new CustomLegListAdapter(this, legList);
+        listView.setAdapter(customLegListAdapter);
 
 
 
@@ -105,147 +111,7 @@ public class Routing_Activity extends AppCompatActivity {
 
 
 
-   /* private void jsonParse() {
-        //Link bauen für Abfrage
-        //http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84[DD.DDDDD]&name_origin=Synagoge,Karlsruhe&type_destination=stop&name_destination=Schlossplatz, Durlach
 
-        String link_teil1 = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84%5bDD.DDDDD%5d&name_origin=";
-        String link_teil2 = "&type_destination=stop&name_destination=";
-        String startHalteParam = "Error";
-        String zielHalteParam = "Error";
-        try{
-            startHalteParam = URLEncoder.encode(startHalteID,"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Log.e("DANI","Can not encode startHalteID");
-        }
-        try{
-            zielHalteParam = URLEncoder.encode(zielHalteID,"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Log.e("DANI","Can not encode ZielHalteID");
-        }
-
-        String fertigerLink = link_teil1 + startHalteParam + link_teil2 + zielHalteParam;
-        Log.i("DANI",""+fertigerLink);
-
-        final JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, fertigerLink, null, new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                //Log.i("METHODE", "in OnResponse");
-                try {
-                    JSONArray jsonJourneyArray = response.getJSONArray("journeys");
-                    for (int i = 0; i < jsonJourneyArray.length(); i++) {
-                        HashMap<String, HashMap> journeyHashMap = new HashMap<>();
-                        journeyList.add(journeyHashMap);
-                        JSONObject actJourney = (JSONObject) jsonJourneyArray.get(i);
-                        JSONArray jsonLegArray = actJourney.getJSONArray("legs");
-                        HashMap<String, Double> legCoordMap = new HashMap<>();
-                        HashMap<String, String> legTimeMap = new HashMap<>();
-                        HashMap<String, String> legMeanOfTransMap = new HashMap<>();
-                        journeyHashMap.put("legTime", legTimeMap);
-                        journeyHashMap.put("coords", legCoordMap);
-                        journeyHashMap.put("transportation",legMeanOfTransMap);
-                        int index = 0;
-                        for (int legNumber = 0; legNumber < jsonLegArray.length(); legNumber++) {
-                            JSONObject actLeg = (JSONObject) jsonLegArray.get(legNumber);
-                            //Origin
-                            JSONObject actOrigin = actLeg.getJSONObject("origin");
-                            String depTimeString = actOrigin.getString("departureTimePlanned");
-                            legTimeMap.put("departureTimePlanned"+legNumber, depTimeString);
-
-                            JSONArray depCoordArray = actOrigin.getJSONArray("coord");
-                            double depCoordX = (double)(depCoordArray.get(0));
-                            double depCoordY = (double) depCoordArray.get(1);
-                            legCoordMap.put("depCoordX"+legNumber, depCoordX);
-                            legCoordMap.put("depCoordY"+legNumber, depCoordY);
-
-                            //Transportation (means of transportation)
-                            JSONObject transpArray = actLeg.getJSONObject("transportation");
-                            String meanOfTransString="error";
-                            if (transpArray.has("name")) {
-                                meanOfTransString = transpArray.getString("name");
-                            } else {
-                                JSONObject product = transpArray.getJSONObject("product");
-                                meanOfTransString = product.getString("name");
-                            }
-                            legMeanOfTransMap.put("name"+legNumber, meanOfTransString);
-
-
-                            //Destination
-                            JSONObject actDestination = actLeg.getJSONObject("destination");
-                            String desTimeString = actDestination.getString("arrivalTimePlanned");
-                            legTimeMap.put("arrivalTimePlanned"+legNumber, desTimeString);
-
-                            JSONArray desCoordArray = actDestination.getJSONArray("coord");
-                            double desCoordX = (double) (desCoordArray.get(0));
-                            double desCoordY = (double) (desCoordArray.get(1));
-                            legCoordMap.put("desCoordX"+legNumber, desCoordX);
-                            legCoordMap.put("desCoordY"+legNumber, desCoordY);
-
-
-                            //Coordinates for Map; Keys: X1,X2...;Y1,Y2...
-                            JSONArray coordArray = actLeg.getJSONArray("coords");
-                            for (int k = 0; k < coordArray.length(); k++) {
-                                JSONArray coord2Array = coordArray.getJSONArray(k);
-                                double coordLX = (double) (coord2Array.get(0));
-                                double coordLY = (double) (coord2Array.get(1));
-                                legCoordMap.put("X" + index, coordLX);
-                                legCoordMap.put("Y" + index, coordLY);
-                                index++;
-                            }
-
-                        }
-
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.e("METHODE", "in catch");
-                }
-                customListAdapter.notifyDataSetChanged();
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Log.e("METHODE", "Error: no connection");
-            }
-
-        });
-        objectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 30000;
-            }
-            @Override
-            public int getCurrentRetryCount() {
-                return 0;
-            }
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-            }
-        });
-        queue_Routing.add(objectRequest);
-    }
-
-    public static String dateParse (String dateString){
-        Date dateDate = null;
-        String resultString = "";
-        try {
-            SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss'Z'");
-            dateSDF.setTimeZone(TimeZone.getTimeZone("UTC"));
-            dateDate = dateSDF.parse(dateString);
-            SimpleDateFormat stringSDF = new SimpleDateFormat("kk:mm");
-            resultString = stringSDF.format(dateDate);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return resultString;
-        }*/
 
     @Override
     protected void onResume() {

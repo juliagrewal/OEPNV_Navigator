@@ -15,7 +15,7 @@
         android:layout_marginBottom="1dp"/>
 
     <ListView
-        android:id="@+id/listView_route"
+        android:id="@+id/leg_listView_route"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

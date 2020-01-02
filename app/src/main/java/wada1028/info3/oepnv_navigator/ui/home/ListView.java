@@ -64,7 +64,6 @@ public class ListView extends AppCompatActivity {
 
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
-
         listView.setClickable(true);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -76,6 +75,7 @@ public class ListView extends AppCompatActivity {
 */
 
                 Intent mapIntent = new Intent(ListView.this,Routing_Activity.class);
+                mapIntent.putExtra(Routing_Activity.KEY_JourneyPosition,position);
                 startActivity(mapIntent);
 
             }
@@ -124,16 +124,21 @@ public class ListView extends AppCompatActivity {
                         HashMap<String, Double> legCoordMap = new HashMap<>();
                         HashMap<String, String> legTimeMap = new HashMap<>();
                         HashMap<String, String> legMeanOfTransMap = new HashMap<>();
+                        HashMap<String,String> legNames = new HashMap<>();
                         journeyHashMap.put("legTime", legTimeMap);
                         journeyHashMap.put("coords", legCoordMap);
                         journeyHashMap.put("transportation",legMeanOfTransMap);
+                        journeyHashMap.put("stopNames",legNames);
                         int index = 0;
                         for (int legNumber = 0; legNumber < jsonLegArray.length(); legNumber++) {
                             JSONObject actLeg = (JSONObject) jsonLegArray.get(legNumber);
                             //Origin
                             JSONObject actOrigin = actLeg.getJSONObject("origin");
                             String depTimeString = actOrigin.getString("departureTimePlanned");
+                            String depNameString = actOrigin.getString("name");
                             legTimeMap.put("departureTimePlanned"+legNumber, depTimeString);
+                            legNames.put("departureName"+legNumber,depNameString);
+
 
                             JSONArray depCoordArray = actOrigin.getJSONArray("coord");
                             double depCoordX = (double)(depCoordArray.get(0));
@@ -156,7 +161,9 @@ public class ListView extends AppCompatActivity {
                             //Destination
                             JSONObject actDestination = actLeg.getJSONObject("destination");
                             String desTimeString = actDestination.getString("arrivalTimePlanned");
+                            String desNameString = actDestination.getString("name");
                             legTimeMap.put("arrivalTimePlanned"+legNumber, desTimeString);
+                            legNames.put("arrivalName"+legNumber,desNameString);
 
                             JSONArray desCoordArray = actDestination.getJSONArray("coord");
                             double desCoordX = (double) (desCoordArray.get(0));
@@ -175,6 +182,7 @@ public class ListView extends AppCompatActivity {
                                 legCoordMap.put("Y" + index, coordLY);
                                 index++;
                             }
+
 
                         }
 
