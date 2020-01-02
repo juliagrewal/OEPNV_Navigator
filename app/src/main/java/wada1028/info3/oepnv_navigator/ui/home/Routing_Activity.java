@@ -20,7 +20,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -39,9 +45,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import wada1028.info3.oepnv_navigator.CustomListAdapter;
+import wada1028.info3.oepnv_navigator.MainActivity;
 import wada1028.info3.oepnv_navigator.R;
 
 public class Routing_Activity extends AppCompatActivity {
@@ -54,6 +62,7 @@ public class Routing_Activity extends AppCompatActivity {
     public static final String KEY_Ziel  = "ZielName";
     public static final String KEY_Start_ID   = "StartId";
     public static final String KEY_Ziel_ID    = "ZielId";
+
 
 
     MapView mapview;
@@ -90,12 +99,35 @@ public class Routing_Activity extends AppCompatActivity {
         String testStringDate = dateParse(testDateString);
         Log.i("DANI",testStringDate);*/
 
+            final double xKoordinateStart= 48.9936164;
+            final double yKoordinateStart=8.4020518 ;
+            final double xKoordinateZiel=49.0091978;
+            final double yKoordinateZiel=8.4040499;
+            final double zoomKoordinateX= (xKoordinateStart+xKoordinateZiel)/2;
+            final double zoomKoordinateY=(yKoordinateStart+yKoordinateZiel)/2;
 
+            IconFactory iconFactory = IconFactory.getInstance(Routing_Activity.this);
+            final Icon icon = iconFactory.fromResource(R.drawable.flag);
+
+            //49,0091978, 8,4040499 Marktplatz
+            // 48,9936164, 8,4020518 Hauptbahnhof
 
         mapview.getMapAsync(new
                                     OnMapReadyCallback() {
                                         @Override
                                         public void onMapReady(MapboxMap mapboxMap) {
+                                            mapboxMap.getUiSettings().setZoomControlsEnabled(true);
+                                            mapboxMap.getUiSettings().setCompassEnabled(true);
+                                            mapboxMap.getUiSettings().setAllGesturesEnabled(true);
+                                            mapboxMap.setCameraPosition( new CameraPosition.Builder()
+                                                    .zoom(13)
+                                                    .target(new LatLng(zoomKoordinateX,zoomKoordinateY))
+                                                    .tilt(10)
+                                                    .build());
+                                            mapboxMap.addMarker( new MarkerViewOptions()
+                                                    .position(new LatLng(xKoordinateStart, yKoordinateStart)));
+                                            mapboxMap.addMarker( new MarkerViewOptions()
+                                                    .position(new LatLng(xKoordinateZiel, yKoordinateZiel)).icon(icon));
 
                                         }
                                     });
