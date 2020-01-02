@@ -146,12 +146,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             stopIDList.put(zielHalt,"de:08212:1");
         }
 
-        Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),Routing_Activity.class);
-        intentHalte.putExtra(Routing_Activity.KEY_Start,startHalt);
-        intentHalte.putExtra(Routing_Activity.KEY_Ziel,zielHalt);
+        Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),ListView.class);
+        intentHalte.putExtra(ListView.KEY_Start,startHalt);
+        intentHalte.putExtra(ListView.KEY_Ziel,zielHalt);
         if(stopIDList.containsKey(startHalt)&&stopIDList.containsKey(zielHalt)){
-            intentHalte.putExtra(Routing_Activity.KEY_Start_ID,stopIDList.get(startHalt));
-            intentHalte.putExtra(Routing_Activity.KEY_Ziel_ID,stopIDList.get(zielHalt));
+            intentHalte.putExtra(ListView.KEY_Start_ID,stopIDList.get(startHalt));
+            intentHalte.putExtra(ListView.KEY_Ziel_ID,stopIDList.get(zielHalt));
             startActivity(intentHalte);
         }
 
