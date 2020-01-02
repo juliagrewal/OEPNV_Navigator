@@ -29,6 +29,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,8 +42,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private AutoCompleteTextView autoCompleteTextViewZiel;
     private String startHalt;
     private String zielHalt;
-    static final String KEY_Start = "KEY_Start";
-    static final String KEY_Ziel = "KEY_Ziel";
+    private HashMap<String,String> stopIDList = new HashMap<>();
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -109,11 +109,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     JSONArray jsonArray = response.getJSONArray("locations");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject location = jsonArray.getJSONObject(i);
-                        String name = location.getString("disassembledName");
-                        JSONObject parent = location.getJSONObject("parent");
-                        String city = parent.getString("name");
-                        halteList.add(name+", "+city);
-                        Log.i("METHODE", "" + name);
+                        String name = location.getString("name");
+                        String id = location.getString("id");
+                        halteList.add(name);
+                        stopIDList.put(name,id);
+                        Log.i("METHODE", "" + name+" "+id);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -134,13 +134,26 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        //startHalt = autoCompleteTextViewStart.getText().toString();
-        //zielHalt = autoCompleteTextViewZiel.getText().toString();
-        startHalt = "Synagoge, Karlsruhe";
-        zielHalt = "Schlossplatz, Durlach";
+        startHalt = autoCompleteTextViewStart.getText().toString();
+        zielHalt = autoCompleteTextViewZiel.getText().toString();
+        // set test values if user does not specify stops
+        if ((startHalt==null) || (startHalt.length()==0)) {
+            startHalt = "Hauptbahnhof, Karlsruhe";
+            stopIDList.put(startHalt, "de:08212:90");
+        }
+        if ((zielHalt==null) || (zielHalt.length()==0)){
+            zielHalt = "Marktplatz, Karlsruhe";
+            stopIDList.put(zielHalt,"de:08212:1");
+        }
+
         Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),Routing_Activity.class);
-        intentHalte.putExtra("KEY_Start",startHalt);
-        intentHalte.putExtra("KEY_Ziel",zielHalt);
-        startActivity(intentHalte);
+        intentHalte.putExtra(Routing_Activity.KEY_Start,startHalt);
+        intentHalte.putExtra(Routing_Activity.KEY_Ziel,zielHalt);
+        if(stopIDList.containsKey(startHalt)&&stopIDList.containsKey(zielHalt)){
+            intentHalte.putExtra(Routing_Activity.KEY_Start_ID,stopIDList.get(startHalt));
+            intentHalte.putExtra(Routing_Activity.KEY_Ziel_ID,stopIDList.get(zielHalt));
+            startActivity(intentHalte);
+        }
+
     }
 }

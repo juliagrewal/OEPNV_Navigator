@@ -20,13 +20,13 @@ public class SlideshowFragment extends Fragment {
     private SlideshowViewModel slideshowViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
+                             ViewGroup container, Bundle savedInstanceState) {
         slideshowViewModel = ViewModelProviders.of(this).get(SlideshowViewModel.class);
         View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
         ZoomageView imageZoom = (ZoomageView)root.findViewById(R.id.myZoomageView);
 
 
-                return root;
+        return root;
 
     }
 }
