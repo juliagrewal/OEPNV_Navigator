@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import wada1028.info3.oepnv_navigator.ui.home.ListView;
 import wada1028.info3.oepnv_navigator.ui.home.Routing_Activity;
 
 
@@ -53,8 +54,8 @@ public class CustomListAdapter extends ArrayAdapter <HashMap> {
         String transportModes = "";
         //Departure Output
         String departureTimeString =(String) legHashMap.get("departureTimePlanned0");
-        textViewDepTim.setText(Routing_Activity.dateParse(departureTimeString));
-        textViewDepLoc.setText(Routing_Activity.startHalte);
+        textViewDepTim.setText(ListView.dateParse(departureTimeString));
+        textViewDepLoc.setText(ListView.startHalte);
         //Transportation
         for(int i =0;i<lengthTransHashMap;i++){
             if(i>0){
@@ -65,8 +66,8 @@ public class CustomListAdapter extends ArrayAdapter <HashMap> {
         textViewTransport.setText(transportModes);
         //Arrival Output
         String arrivalTimeString = (String) legHashMap.get("arrivalTimePlanned"+((lengthLegHashMap/2)-1));
-        textViewArrTim.setText(Routing_Activity.dateParse(arrivalTimeString));
-        textViewArrLoc.setText(Routing_Activity.zielHalte);
+        textViewArrTim.setText(ListView.dateParse(arrivalTimeString));
+        textViewArrLoc.setText(ListView.zielHalte);
 
 
         return convertView;
