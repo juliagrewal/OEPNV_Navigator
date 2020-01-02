@@ -15,8 +15,7 @@
         app:layout_constraintBottom_toTopOf="@+id/listView_route"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/listView_route"
-        app:layout_constraintTop_toTopOf="parent"
-        app:mapbox_uiZoomControls="true"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/listView_route"
