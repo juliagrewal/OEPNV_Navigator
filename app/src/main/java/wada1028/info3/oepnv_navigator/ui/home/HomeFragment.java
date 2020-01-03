@@ -111,9 +111,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         JSONObject location = jsonArray.getJSONObject(i);
                         String name = location.getString("name");
                         String id = location.getString("id");
-                        halteList.add(name);
-                        stopIDList.put(name,id);
-                        Log.i("METHODE", "" + name+" "+id);
+                        String type = location.getString("type");
+                        if (type.equals("stop")) {
+                            if (!halteList.contains(name)) {
+                                halteList.add(name);
+                                stopIDList.put(name, id);
+                                Log.i("METHODE", "" + name + " " + id);
+                            }
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -130,6 +135,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         queue.add(objectRequest);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, halteList);
         aCTextView.setAdapter(arrayAdapter);
+
+
     }
 
     @Override
@@ -156,4 +163,5 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 
     }
+
 }
