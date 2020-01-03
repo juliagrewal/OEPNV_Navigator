@@ -5,7 +5,7 @@ import android.app.Application;
 import java.util.HashMap;
 import java.util.List;
 
-class GlobalApplication extends Application {
+public class GlobalApplication extends Application {
     List<HashMap> journeyList = null;
     public List<HashMap> getJourneyList() {
         return journeyList;

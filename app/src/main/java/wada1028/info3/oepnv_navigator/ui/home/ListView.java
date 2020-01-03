@@ -53,6 +53,10 @@ public class ListView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Calling Application class (see application tag in AndroidManifest.xml)
+        final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
+        // set empty journey list
+        globalApplication.setJourneyList(journeyList);
         setContentView(R.layout.activity_list_view);
         final android.widget.ListView listView = (android.widget.ListView)findViewById(R.id.listView_route);
 
@@ -129,7 +133,6 @@ public class ListView extends AppCompatActivity {
                         journeyHashMap.put("coords", legCoordMap);
                         journeyHashMap.put("transportation",legMeanOfTransMap);
                         journeyHashMap.put("stopNames",legNames);
-                        int index = 0;
                         for (int legNumber = 0; legNumber < jsonLegArray.length(); legNumber++) {
                             JSONObject actLeg = (JSONObject) jsonLegArray.get(legNumber);
                             //Origin
@@ -178,9 +181,8 @@ public class ListView extends AppCompatActivity {
                                 JSONArray coord2Array = coordArray.getJSONArray(k);
                                 double coordLX = (double) (coord2Array.get(0));
                                 double coordLY = (double) (coord2Array.get(1));
-                                legCoordMap.put("X" + index, coordLX);
-                                legCoordMap.put("Y" + index, coordLY);
-                                index++;
+                                legCoordMap.put("X" + legNumber + "." + k, coordLX);
+                                legCoordMap.put("Y" + legNumber + "." + k, coordLY);
                             }
 
 
