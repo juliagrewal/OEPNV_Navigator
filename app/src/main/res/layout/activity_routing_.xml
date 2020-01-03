@@ -14,10 +14,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <ListView
         android:id="@+id/leg_listView_route"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:animateLayoutChanges="false"
+        android:animationCache="false"
+        android:clickable="false"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:contextClickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
