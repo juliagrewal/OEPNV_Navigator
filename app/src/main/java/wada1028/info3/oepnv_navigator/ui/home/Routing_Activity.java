@@ -123,7 +123,7 @@ public class Routing_Activity extends AppCompatActivity {
                                             mapboxMap.getUiSettings().setCompassEnabled(true);
                                             mapboxMap.getUiSettings().setAllGesturesEnabled(true);
                                             mapboxMap.setCameraPosition( new CameraPosition.Builder()
-                                                    .zoom(12)
+                                                    .zoom(11)
                                                     .target(center)
                                                     .tilt(10)
                                                     .build());
