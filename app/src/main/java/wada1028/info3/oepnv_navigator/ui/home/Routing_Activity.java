@@ -8,6 +8,8 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -109,6 +111,10 @@ public class Routing_Activity extends AppCompatActivity {
                     .width(3f);
             polylineOptionsList.add(polylineOptions);
         }
+
+        IconFactory iconFactory = IconFactory.getInstance(Routing_Activity.this);
+        final Icon icon = iconFactory.fromResource(R.drawable.flag);
+
         mapview.getMapAsync(new
                                     OnMapReadyCallback() {
                                         @Override
@@ -126,7 +132,7 @@ public class Routing_Activity extends AppCompatActivity {
                                             for (int i=0; i<polylineOptionsList.size(); i++){
                                                 mapboxMap.addPolyline(polylineOptionsList.get(i));
                                             }
-                                            mapboxMap.addMarker(destinationMarkerOptions);
+                                            mapboxMap.addMarker(destinationMarkerOptions.icon(icon));
                                             LatLngBounds latLngBounds = new LatLngBounds.Builder()
                                                     .include(depCoord)
                                                     .include(desCoord)
