@@ -29,6 +29,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,30 +37,21 @@ import wada1028.info3.oepnv_navigator.R;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
-    private HomeViewModel homeViewModel;
     private List<String> halteList = new ArrayList<>();
-    private RequestQueue queue;
     private AutoCompleteTextView autoCompleteTextViewStart;
     private AutoCompleteTextView autoCompleteTextViewZiel;
-    private Button suchenButton;
     private String startHalt;
     private String zielHalt;
-    public static final String KEY_Start = "KEY_Start";
-    public static final String KEY_Ziel = "KEY_Ziel";
+    private HashMap<String,String> stopIDList = new HashMap<>();
 
-
-
-    //private static final String[] STOPS = new String[]{"Europaplatz","Markplatz","Herrenstraße"};
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        suchenButton = (Button)root.findViewById(R.id.button_suche);
+        Button suchenButton = (Button) root.findViewById(R.id.button_suche);
         suchenButton.setOnClickListener(this);
         autoCompleteTextViewStart = root.findViewById(R.id.autoCompleteTextView_Starthaltestelle);
         autoCompleteTextViewZiel = root.findViewById(R.id.autoCompleteTextView_zielhaltestelle);
-        startHalt = autoCompleteTextViewStart.getText().toString();
-        zielHalt = autoCompleteTextViewZiel.getText().toString();
 
 
         autoCompleteTextViewStart.addTextChangedListener(new TextWatcher() {
@@ -101,12 +93,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
 
 
+
         return root;
     }
 
     private void jsonParse(AutoCompleteTextView aCTextView) {
         Log.i("METHODE", "in jsonParse");
-        queue = Volley.newRequestQueue(getContext());
+        RequestQueue queue = Volley.newRequestQueue(getContext());
         String url = "http://smartmmi.demo.mentz.net/smartmmi/XML_STOPFINDER_REQUEST?outputFormat=rapidJson&type_sf=any&name_sf=" + aCTextView.getText().toString();
         final JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -116,11 +109,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     JSONArray jsonArray = response.getJSONArray("locations");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject location = jsonArray.getJSONObject(i);
-                        //String id = location.getString("id");
                         String name = location.getString("name");
-                        //String type =location.getString("type");
-                        halteList.add(name);
-                        Log.i("METHODE", "" + name);
+                        String id = location.getString("id");
+                        String type = location.getString("type");
+                        if (type.equals("stop")) {
+                            if (!halteList.contains(name)) {
+                                halteList.add(name);
+                                stopIDList.put(name, id);
+                                Log.i("METHODE", "" + name + " " + id);
+                            }
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -137,13 +135,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         queue.add(objectRequest);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, halteList);
         aCTextView.setAdapter(arrayAdapter);
+
+
     }
 
     @Override
     public void onClick(View view) {
-        Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),Routing_Activity.class);
-        intentHalte.putExtra("KEY_Start",startHalt);
-        intentHalte.putExtra("KEY_Ziel",zielHalt);
-        startActivity(intentHalte);
+        startHalt = autoCompleteTextViewStart.getText().toString();
+        zielHalt = autoCompleteTextViewZiel.getText().toString();
+        // set test values if user does not specify stops
+        if ((startHalt==null) || (startHalt.length()==0)) {
+            startHalt = "Hauptbahnhof, Karlsruhe";
+            stopIDList.put(startHalt, "de:08212:90");
+        }
+        if ((zielHalt==null) || (zielHalt.length()==0)){
+            zielHalt = "Marktplatz, Karlsruhe";
+            stopIDList.put(zielHalt,"de:08212:1");
+        }
+
+        Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),ListView.class);
+        intentHalte.putExtra(ListView.KEY_Start,startHalt);
+        intentHalte.putExtra(ListView.KEY_Ziel,zielHalt);
+        if(stopIDList.containsKey(startHalt)&&stopIDList.containsKey(zielHalt)){
+            intentHalte.putExtra(ListView.KEY_Start_ID,stopIDList.get(startHalt));
+            intentHalte.putExtra(ListView.KEY_Ziel_ID,stopIDList.get(zielHalt));
+            startActivity(intentHalte);
+        }
+
     }
+
 }
