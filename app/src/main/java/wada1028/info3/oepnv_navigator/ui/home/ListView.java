@@ -53,6 +53,10 @@ public class ListView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Calling Application class (see application tag in AndroidManifest.xml)
+        final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
+        // set empty journey list
+        globalApplication.setJourneyList(journeyList);
         setContentView(R.layout.activity_list_view);
         final android.widget.ListView listView = (android.widget.ListView)findViewById(R.id.listView_route);
 
@@ -64,7 +68,6 @@ public class ListView extends AppCompatActivity {
 
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
-
         listView.setClickable(true);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -76,6 +79,7 @@ public class ListView extends AppCompatActivity {
 */
 
                 Intent mapIntent = new Intent(ListView.this,Routing_Activity.class);
+                mapIntent.putExtra(Routing_Activity.KEY_JourneyPosition,position);
                 startActivity(mapIntent);
 
             }
@@ -124,16 +128,20 @@ public class ListView extends AppCompatActivity {
                         HashMap<String, Double> legCoordMap = new HashMap<>();
                         HashMap<String, String> legTimeMap = new HashMap<>();
                         HashMap<String, String> legMeanOfTransMap = new HashMap<>();
+                        HashMap<String,String> legNames = new HashMap<>();
                         journeyHashMap.put("legTime", legTimeMap);
                         journeyHashMap.put("coords", legCoordMap);
                         journeyHashMap.put("transportation",legMeanOfTransMap);
-                        int index = 0;
+                        journeyHashMap.put("stopNames",legNames);
                         for (int legNumber = 0; legNumber < jsonLegArray.length(); legNumber++) {
                             JSONObject actLeg = (JSONObject) jsonLegArray.get(legNumber);
                             //Origin
                             JSONObject actOrigin = actLeg.getJSONObject("origin");
                             String depTimeString = actOrigin.getString("departureTimePlanned");
+                            String depNameString = actOrigin.getString("name");
                             legTimeMap.put("departureTimePlanned"+legNumber, depTimeString);
+                            legNames.put("departureName"+legNumber,depNameString);
+
 
                             JSONArray depCoordArray = actOrigin.getJSONArray("coord");
                             double depCoordX = (double)(depCoordArray.get(0));
@@ -156,7 +164,9 @@ public class ListView extends AppCompatActivity {
                             //Destination
                             JSONObject actDestination = actLeg.getJSONObject("destination");
                             String desTimeString = actDestination.getString("arrivalTimePlanned");
+                            String desNameString = actDestination.getString("name");
                             legTimeMap.put("arrivalTimePlanned"+legNumber, desTimeString);
+                            legNames.put("arrivalName"+legNumber,desNameString);
 
                             JSONArray desCoordArray = actDestination.getJSONArray("coord");
                             double desCoordX = (double) (desCoordArray.get(0));
@@ -171,10 +181,10 @@ public class ListView extends AppCompatActivity {
                                 JSONArray coord2Array = coordArray.getJSONArray(k);
                                 double coordLX = (double) (coord2Array.get(0));
                                 double coordLY = (double) (coord2Array.get(1));
-                                legCoordMap.put("X" + index, coordLX);
-                                legCoordMap.put("Y" + index, coordLY);
-                                index++;
+                                legCoordMap.put("X" + legNumber + "." + k, coordLX);
+                                legCoordMap.put("Y" + legNumber + "." + k, coordLY);
                             }
+
 
                         }
 

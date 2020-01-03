@@ -8,22 +8,27 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name=".ui.home.GlobalApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
-        <activity android:name=".ui.home.ListView"></activity>
+        android:usesCleartextTraffic="true"
+        android:screenOrientation="portrait">
+        <activity android:name=".ui.home.ListView"
+            android:screenOrientation="portrait"></activity>
 
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
 
-        <activity android:name=".ui.home.Routing_Activity" />
+        <activity android:name=".ui.home.Routing_Activity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

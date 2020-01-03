@@ -2,22 +2,33 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_routing"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.home.Routing_Activity">
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginBottom="1dp"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 
-    <ListView
-        android:id="@+id/listView_route"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
 
+        <ListView
+            android:id="@+id/leg_listView_route"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+    </LinearLayout>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

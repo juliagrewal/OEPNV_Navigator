@@ -1,24 +1,19 @@
 package wada1028.info3.oepnv_navigator;
 
 import android.app.Activity;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.RotateAnimation;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import wada1028.info3.oepnv_navigator.ui.home.ListView;
-import wada1028.info3.oepnv_navigator.ui.home.Routing_Activity;
 
 
 public class CustomListAdapter extends ArrayAdapter <HashMap> {

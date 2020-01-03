@@ -1,116 +1,119 @@
 package wada1028.info3.oepnv_navigator.ui.home;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.Response.ErrorListener;
-import com.android.volley.RetryPolicy;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
 
-import wada1028.info3.oepnv_navigator.CustomListAdapter;
-import wada1028.info3.oepnv_navigator.MainActivity;
+import wada1028.info3.oepnv_navigator.CustomLegListAdapter;
+import wada1028.info3.oepnv_navigator.Leg;
 import wada1028.info3.oepnv_navigator.R;
-
 public class Routing_Activity extends AppCompatActivity {
-    RequestQueue queue_Routing;
+    public static String KEY_JourneyPosition = "JourneyPosition";
     public static String startHalte;
     public static String zielHalte;
     public static String startHalteID;
-    public static String zielHalteID;
-    public static final String KEY_Start = "StartName";
-    public static final String KEY_Ziel  = "ZielName";
-    public static final String KEY_Start_ID   = "StartId";
-    public static final String KEY_Ziel_ID    = "ZielId";
-
-
-
+    List<Leg> legList;
+    List<List<LatLng>> trailList;
     MapView mapview;
-    //List<HashMap> journeyList = new ArrayList<>();
-    //CustomListAdapter customListAdapter;
-
+    CustomLegListAdapter customLegListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         Log.i("Julia", "in Routing Activity ");
-
         super.onCreate(savedInstanceState);
         MapboxAccountManager.start(this, getString(R.string.access_token));
         setContentView(R.layout.activity_routing_);
-        ListView listView = (ListView)findViewById(R.id.listView_route);
+        ListView listView = (ListView)findViewById(R.id.leg_listView_route);
         mapview = (MapView)findViewById(R.id.mapView);
+        legList = new ArrayList<Leg>();
+        trailList = new ArrayList<List<LatLng>>();
+        int position = getIntent().getIntExtra(KEY_JourneyPosition,0);
+        // Calling Application class (see application tag in AndroidManifest.xml)
+        final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
+        List<HashMap> journeyList = globalApplication.getJourneyList();
+        HashMap actJourney = journeyList.get(position);
+        HashMap actLegTimeMap =(HashMap) actJourney.get("legTime");
+        HashMap actTransMode = (HashMap) actJourney.get("transportation");
+        HashMap actNames = (HashMap) actJourney.get("stopNames");
+        HashMap actCoords = (HashMap) actJourney.get("coords");
+        int numberOfLegs = (actLegTimeMap.size()/2);
+        for(int legIndex =0;legIndex<numberOfLegs;legIndex++){
+            Leg actLeg = new Leg();
+            actLeg.depTime = (String) actLegTimeMap.get("departureTimePlanned"+legIndex);
+            actLeg.depName = (String) actNames.get("departureName"+legIndex);
+            actLeg.transMode = (String) actTransMode.get("name"+legIndex);
+            actLeg.desTime = (String) actLegTimeMap.get("arrivalTimePlanned"+legIndex);
+            actLeg.desName = (String) actNames.get("arrivalName"+legIndex);
+            legList.add(actLeg);
+            // collect trail points for one leg
+            List<LatLng> trail = new ArrayList<LatLng>();
+            for (int k=0; actCoords.containsKey("X"+legIndex+"."+k);k++){
+                double lat = (double) actCoords.get("X"+legIndex+"."+k);
+                double lng = (double) actCoords.get("Y"+legIndex+"."+k);
+                LatLng trailPoint = new LatLng(lat,lng);
+                trail.add(trailPoint);
+            }
+            trailList.add(trail);
+        }
+        customLegListAdapter = new CustomLegListAdapter(this, legList);
+        listView.setAdapter(customLegListAdapter);
+        customLegListAdapter.notifyDataSetChanged();
+        // collect input for Map (Marker, route)
+        double xCoordinate, yCoordinate;
+        //departure marker
+        xCoordinate = (double) actCoords.get("depCoordX0");
+        yCoordinate = (double) actCoords.get("depCoordY0");
+        final LatLng depCoord = new LatLng(xCoordinate, yCoordinate);
+        final MarkerOptions departureMarkerOptions = new MarkerOptions()
+                .setTitle("Start")
+                .setPosition(depCoord);
+        //destination marker
+        for (int i=0; actCoords.containsKey("desCoordX" + i); i++) {
+            xCoordinate = (double) actCoords.get("desCoordX" + i);
+            yCoordinate = (double) actCoords.get("desCoordY" + i);
+        }
+        final LatLng desCoord = new LatLng(xCoordinate, yCoordinate);
+        final MarkerOptions destinationMarkerOptions = new MarkerOptions()
+                .setTitle("Ziel")
+                .setPosition(desCoord);
+        final LatLng center = average(depCoord, desCoord);
+        final List<Integer> colorList = new ArrayList<>();
+        colorList.add(Color.RED);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.BLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.YELLOW);
+        // create Poly Line options for all trails
+        final List<PolylineOptions> polylineOptionsList = new ArrayList<>();
+        for (int trailIndex=0; trailIndex < trailList.size(); trailIndex++){
+            final PolylineOptions polylineOptions = new PolylineOptions()
+                    .addAll(trailList.get(trailIndex))
+                    .color(colorList.get(trailIndex))
+                    .width(3f);
+            polylineOptionsList.add(polylineOptions);
+        }
 
-
-
-       /* queue_Routing = Volley.newRequestQueue(this);
-        startHalte = getIntent().getStringExtra(KEY_Start);
-        zielHalte = getIntent().getStringExtra(KEY_Ziel);
-        startHalteID = getIntent().getStringExtra(KEY_Start_ID);
-        zielHalteID = getIntent().getStringExtra(KEY_Ziel_ID);*/
-
-        /*customListAdapter = new CustomListAdapter(this, journeyList);
-        listView.setAdapter(customListAdapter);
-        jsonParse();*/
-
-        //Date:
-        //TestDate: "2019-12-24T10:39:00Z"
-
-        /*String testDateString = "2019-12-24T10:39:07Z";
-        String testStringDate = dateParse(testDateString);
-        Log.i("DANI",testStringDate);*/
-
-            final double xKoordinateStart= 48.9936164;
-            final double yKoordinateStart=8.4020518 ;
-            final double xKoordinateZiel=49.0091978;
-            final double yKoordinateZiel=8.4040499;
-            final double zoomKoordinateX= (xKoordinateStart+xKoordinateZiel)/2;
-            final double zoomKoordinateY=(yKoordinateStart+yKoordinateZiel)/2;
-
-            IconFactory iconFactory = IconFactory.getInstance(Routing_Activity.this);
-            final Icon icon = iconFactory.fromResource(R.drawable.flag);
-
-            //49,0091978, 8,4040499 Marktplatz
-            // 48,9936164, 8,4020518 Hauptbahnhof
+        IconFactory iconFactory = IconFactory.getInstance(Routing_Activity.this);
+        final Icon icon = iconFactory.fromResource(R.drawable.flag);
 
         mapview.getMapAsync(new
                                     OnMapReadyCallback() {
@@ -120,194 +123,55 @@ public class Routing_Activity extends AppCompatActivity {
                                             mapboxMap.getUiSettings().setCompassEnabled(true);
                                             mapboxMap.getUiSettings().setAllGesturesEnabled(true);
                                             mapboxMap.setCameraPosition( new CameraPosition.Builder()
-                                                    .zoom(13)
-                                                    .target(new LatLng(zoomKoordinateX,zoomKoordinateY))
+                                                    .zoom(12)
+                                                    .target(center)
                                                     .tilt(10)
                                                     .build());
-                                            mapboxMap.addMarker( new MarkerViewOptions()
-                                                    .position(new LatLng(xKoordinateStart, yKoordinateStart)));
-                                            mapboxMap.addMarker( new MarkerViewOptions()
-                                                    .position(new LatLng(xKoordinateZiel, yKoordinateZiel)).icon(icon));
-
+                                            mapboxMap.removeAnnotations();
+                                            mapboxMap.addMarker(departureMarkerOptions);
+                                            for (int i=0; i<polylineOptionsList.size(); i++){
+                                                mapboxMap.addPolyline(polylineOptionsList.get(i));
+                                            }
+                                            mapboxMap.addMarker(destinationMarkerOptions.icon(icon));
+                                            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                                                    .include(depCoord)
+                                                    .include(desCoord)
+                                                    .build();
+                                            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 100), 1000);
                                         }
                                     });
         mapview.onCreate(savedInstanceState);
-
     }
-
-
-
-   /* private void jsonParse() {
-        //Link bauen für Abfrage
-        //http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84[DD.DDDDD]&name_origin=Synagoge,Karlsruhe&type_destination=stop&name_destination=Schlossplatz, Durlach
-
-        String link_teil1 = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84%5bDD.DDDDD%5d&name_origin=";
-        String link_teil2 = "&type_destination=stop&name_destination=";
-        String startHalteParam = "Error";
-        String zielHalteParam = "Error";
-        try{
-            startHalteParam = URLEncoder.encode(startHalteID,"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Log.e("DANI","Can not encode startHalteID");
-        }
-        try{
-            zielHalteParam = URLEncoder.encode(zielHalteID,"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Log.e("DANI","Can not encode ZielHalteID");
-        }
-
-        String fertigerLink = link_teil1 + startHalteParam + link_teil2 + zielHalteParam;
-        Log.i("DANI",""+fertigerLink);
-
-        final JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, fertigerLink, null, new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                //Log.i("METHODE", "in OnResponse");
-                try {
-                    JSONArray jsonJourneyArray = response.getJSONArray("journeys");
-                    for (int i = 0; i < jsonJourneyArray.length(); i++) {
-                        HashMap<String, HashMap> journeyHashMap = new HashMap<>();
-                        journeyList.add(journeyHashMap);
-                        JSONObject actJourney = (JSONObject) jsonJourneyArray.get(i);
-                        JSONArray jsonLegArray = actJourney.getJSONArray("legs");
-                        HashMap<String, Double> legCoordMap = new HashMap<>();
-                        HashMap<String, String> legTimeMap = new HashMap<>();
-                        HashMap<String, String> legMeanOfTransMap = new HashMap<>();
-                        journeyHashMap.put("legTime", legTimeMap);
-                        journeyHashMap.put("coords", legCoordMap);
-                        journeyHashMap.put("transportation",legMeanOfTransMap);
-                        int index = 0;
-                        for (int legNumber = 0; legNumber < jsonLegArray.length(); legNumber++) {
-                            JSONObject actLeg = (JSONObject) jsonLegArray.get(legNumber);
-                            //Origin
-                            JSONObject actOrigin = actLeg.getJSONObject("origin");
-                            String depTimeString = actOrigin.getString("departureTimePlanned");
-                            legTimeMap.put("departureTimePlanned"+legNumber, depTimeString);
-
-                            JSONArray depCoordArray = actOrigin.getJSONArray("coord");
-                            double depCoordX = (double)(depCoordArray.get(0));
-                            double depCoordY = (double) depCoordArray.get(1);
-                            legCoordMap.put("depCoordX"+legNumber, depCoordX);
-                            legCoordMap.put("depCoordY"+legNumber, depCoordY);
-
-                            //Transportation (means of transportation)
-                            JSONObject transpArray = actLeg.getJSONObject("transportation");
-                            String meanOfTransString="error";
-                            if (transpArray.has("name")) {
-                                meanOfTransString = transpArray.getString("name");
-                            } else {
-                                JSONObject product = transpArray.getJSONObject("product");
-                                meanOfTransString = product.getString("name");
-                            }
-                            legMeanOfTransMap.put("name"+legNumber, meanOfTransString);
-
-
-                            //Destination
-                            JSONObject actDestination = actLeg.getJSONObject("destination");
-                            String desTimeString = actDestination.getString("arrivalTimePlanned");
-                            legTimeMap.put("arrivalTimePlanned"+legNumber, desTimeString);
-
-                            JSONArray desCoordArray = actDestination.getJSONArray("coord");
-                            double desCoordX = (double) (desCoordArray.get(0));
-                            double desCoordY = (double) (desCoordArray.get(1));
-                            legCoordMap.put("desCoordX"+legNumber, desCoordX);
-                            legCoordMap.put("desCoordY"+legNumber, desCoordY);
-
-
-                            //Coordinates for Map; Keys: X1,X2...;Y1,Y2...
-                            JSONArray coordArray = actLeg.getJSONArray("coords");
-                            for (int k = 0; k < coordArray.length(); k++) {
-                                JSONArray coord2Array = coordArray.getJSONArray(k);
-                                double coordLX = (double) (coord2Array.get(0));
-                                double coordLY = (double) (coord2Array.get(1));
-                                legCoordMap.put("X" + index, coordLX);
-                                legCoordMap.put("Y" + index, coordLY);
-                                index++;
-                            }
-
-                        }
-
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.e("METHODE", "in catch");
-                }
-                customListAdapter.notifyDataSetChanged();
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Log.e("METHODE", "Error: no connection");
-            }
-
-        });
-        objectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 30000;
-            }
-            @Override
-            public int getCurrentRetryCount() {
-                return 0;
-            }
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-            }
-        });
-        queue_Routing.add(objectRequest);
-    }
-
-    public static String dateParse (String dateString){
-        Date dateDate = null;
-        String resultString = "";
-        try {
-            SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss'Z'");
-            dateSDF.setTimeZone(TimeZone.getTimeZone("UTC"));
-            dateDate = dateSDF.parse(dateString);
-            SimpleDateFormat stringSDF = new SimpleDateFormat("kk:mm");
-            resultString = stringSDF.format(dateDate);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return resultString;
-        }*/
-
     @Override
     protected void onResume() {
         super.onResume();
         mapview.onResume();
     }
-
     @Override
     protected void onPause() {
         super.onPause();
         mapview.onPause();
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mapview.onDestroy();
     }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapview.onSaveInstanceState(outState);
     }
-
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mapview.onLowMemory();
     }
-
-
+    // helper function to calculate average of two coords
+    LatLng average(LatLng c1, LatLng c2){
+        LatLng result = new LatLng();
+        result.setLatitude((c1.getLatitude()+c2.getLatitude())/2);
+        result.setLongitude((c1.getLongitude()+c2.getLongitude())/2);
+        return result;
+    }
 }
