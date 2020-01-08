@@ -8,9 +8,9 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="320dp"
-        android:layout_height="178dp"
-        android:layout_marginTop="57dp"
-        android:layout_marginBottom="6dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="398dp"
         android:gravity="top"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/button_suche"
@@ -58,23 +58,78 @@
 
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="320dp"
+        android:layout_height="350dp"
+        android:layout_marginTop="57dp"
+        android:layout_marginBottom="6dp"
+        android:gravity="top"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/button_suche"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.866">
+
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Uhrzeit"
+            android:textAllCaps="true"
+            android:textColor="#FFBB33"
+            android:textStyle="bold" />
+
+        <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="140dp"
+            android:layout_gravity="center"
+            android:timePickerMode="spinner"
+            tools:layout_editor_absoluteX="102dp"
+            tools:layout_editor_absoluteY="132dp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Datum"
+            android:textAllCaps="true"
+            android:textColor="#FFBB33"
+            android:textStyle="bold" />
+
+        <DatePicker
+            android:id="@+id/datePicker"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_gravity="center"
+            android:datePickerMode="spinner"
+            tools:layout_editor_absoluteX="166dp"
+            tools:layout_editor_absoluteY="43dp" />
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/button_suche"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="152dp"
-        android:layout_height="54dp"
+        android:layout_height="0dp"
         android:layout_marginStart="162dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="420dp"
         android:layout_marginEnd="162dp"
-        android:layout_marginBottom="376dp"
         android:background="#FFBB33"
         android:text="Suche"
         android:textAllCaps="true"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

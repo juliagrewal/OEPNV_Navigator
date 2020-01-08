@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -27,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private List<String> halteList = new ArrayList<>();
     private AutoCompleteTextView autoCompleteTextViewStart;
     private AutoCompleteTextView autoCompleteTextViewZiel;
+    private TimePicker timePicker;
+    private DatePicker datePicker;
+    private Integer hour;
+    private Integer minute;
+    private Integer day;
+    private Integer month;
+    private Integer year;
     private String startHalt;
     private String zielHalt;
     private HashMap<String,String> stopIDList = new HashMap<>();
@@ -52,7 +60,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         suchenButton.setOnClickListener(this);
         autoCompleteTextViewStart = root.findViewById(R.id.autoCompleteTextView_Starthaltestelle);
         autoCompleteTextViewZiel = root.findViewById(R.id.autoCompleteTextView_zielhaltestelle);
+        timePicker = (TimePicker) root.findViewById(R.id.timePicker);
+        timePicker.setIs24HourView(true);
 
+        datePicker = (DatePicker) root.findViewById(R.id.datePicker);
+        datePicker.setCalendarViewShown(false);
 
         autoCompleteTextViewStart.addTextChangedListener(new TextWatcher() {
             @Override
@@ -153,15 +165,69 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             stopIDList.put(zielHalt,"de:08212:1");
         }
 
-        Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),ListView.class);
-        intentHalte.putExtra(ListView.KEY_Start,startHalt);
-        intentHalte.putExtra(ListView.KEY_Ziel,zielHalt);
-        if(stopIDList.containsKey(startHalt)&&stopIDList.containsKey(zielHalt)){
-            intentHalte.putExtra(ListView.KEY_Start_ID,stopIDList.get(startHalt));
-            intentHalte.putExtra(ListView.KEY_Ziel_ID,stopIDList.get(zielHalt));
+        day = datePicker.getDayOfMonth();
+        month = datePicker.getMonth() + 1;
+        year = datePicker.getYear();
+        //dateLinkParse(day, month, year);
+
+
+        hour = timePicker.getHour();
+        minute = timePicker.getMinute();
+        // timeLinkParse(minute, hour);
+        //Log.i("LUISA",""+hour + minute);
+        //Log.i("LUISA", "Time: " + timeLinkParse(minute, hour));
+
+        Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), LegListView.class);
+        intentHalte.putExtra(LegListView.KEY_Start,startHalt);
+        intentHalte.putExtra(LegListView.KEY_Ziel,zielHalt);
+                if(stopIDList.containsKey(startHalt)&&stopIDList.containsKey(zielHalt)){
+            intentHalte.putExtra(LegListView.KEY_Start_ID,stopIDList.get(startHalt));
+            intentHalte.putExtra(LegListView.KEY_Ziel_ID,stopIDList.get(zielHalt));
+            intentHalte.putExtra(LegListView.KEY_Date, dateLinkParse(day, month, year));
+            intentHalte.putExtra(LegListView.KEY_Time,timeLinkParse(minute, hour));
             startActivity(intentHalte);
         }
 
+    }
+
+    public String dateLinkParse (int date, int month, int year){
+        String monthString = String.valueOf(month);
+        String dateString = String.valueOf(date);
+
+        if (month < 10){
+            monthString = "0" + month;
+            //Log.i("LUISA", "Month: " + monthString);
+        }
+
+        if(date < 10){
+            dateString = "" + 0 + date;
+            //Log.i("LUISA", "Date: " + dateString);
+        }
+
+        String dateMonthYear = "" + year + monthString+ dateString;
+        //Log.i("LUISA", "methodeDatum: " +dateMonthYear);
+        return dateMonthYear;
+
+    }
+
+    public String timeLinkParse ( int minute, int hour){
+        String minuteString= String.valueOf(minute);
+        String hourString = String.valueOf(hour);
+
+        if(hour < 10){
+            hourString = "" + 0 + hour;
+            //Log.i("LUISA", "Hour: " + hourString);
+        }
+
+        if(minute< 10){
+            minuteString="" + 0 + minute;
+            //Log.i("LUISA", "minute: " + minuteString);
+        }
+
+
+        String minuteHour = hourString + minuteString;
+        //Log.i("LUISA", "Minute'Hour: " + minuteHour);
+        return minuteHour;
     }
 
 }
