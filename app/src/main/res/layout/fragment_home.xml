@@ -10,10 +10,8 @@
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:layout_marginBottom="398dp"
         android:gravity="top"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/button_suche"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -60,56 +58,43 @@
 
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="320dp"
-        android:layout_height="350dp"
-        android:layout_marginTop="57dp"
-        android:layout_marginBottom="6dp"
-        android:gravity="top"
-        android:orientation="vertical"
+        android:id="@+id/linearLayout4"
+        android:layout_width="407dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="213dp"
+        android:layout_marginBottom="25dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/button_suche"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.866">
-
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Uhrzeit"
-            android:textAllCaps="true"
-            android:textColor="#FFBB33"
-            android:textStyle="bold" />
-
-        <TimePicker
-            android:id="@+id/timePicker"
+            android:id="@+id/textViewAbfahrt"
             android:layout_width="wrap_content"
-            android:layout_height="140dp"
-            android:layout_gravity="center"
-            android:timePickerMode="spinner"
-            tools:layout_editor_absoluteX="102dp"
-            tools:layout_editor_absoluteY="132dp" />
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Datum"
+            android:text="Abfahrt"
             android:textAllCaps="true"
-            android:textColor="#FFBB33"
+            android:textColor="@color/colorAccent"
             android:textStyle="bold" />
 
-        <DatePicker
-            android:id="@+id/datePicker"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:layout_gravity="center"
-            android:datePickerMode="spinner"
-            tools:layout_editor_absoluteX="166dp"
-            tools:layout_editor_absoluteY="43dp" />
+        <TextView
+            android:id="@+id/textViewTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:text="TextView"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/textViewDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:text="TextView" />
 
     </LinearLayout>
 
@@ -119,17 +104,18 @@
         android:layout_width="152dp"
         android:layout_height="0dp"
         android:layout_marginStart="162dp"
-        android:layout_marginTop="420dp"
         android:layout_marginEnd="162dp"
+        android:layout_marginBottom="421dp"
         android:background="#FFBB33"
         android:text="Suche"
         android:textAllCaps="true"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintHorizontal_bias="0.661"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

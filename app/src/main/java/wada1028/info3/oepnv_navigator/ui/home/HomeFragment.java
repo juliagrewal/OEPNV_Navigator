@@ -1,5 +1,6 @@
 package wada1028.info3.oepnv_navigator.ui.home;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
@@ -29,20 +31,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 import wada1028.info3.oepnv_navigator.R;
+import wada1028.info3.oepnv_navigator.ui.Dialog;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+import static java.lang.String.valueOf;
+
+public class HomeFragment extends Fragment {
 
     private List<String> halteList = new ArrayList<>();
     private AutoCompleteTextView autoCompleteTextViewStart;
     private AutoCompleteTextView autoCompleteTextViewZiel;
-    private TimePicker timePicker;
-    private DatePicker datePicker;
     private Integer hour;
     private Integer minute;
     private Integer day;
@@ -50,60 +55,121 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private Integer year;
     private String startHalt;
     private String zielHalt;
-    private HashMap<String,String> stopIDList = new HashMap<>();
+    private HashMap<String, String> stopIDList = new HashMap<>();
+    private Button suchenButton;
+    private TextView textViewTime;
+    private TextView textViewDate;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        Button suchenButton = (Button) root.findViewById(R.id.button_suche);
-        suchenButton.setOnClickListener(this);
+        suchenButton = root.findViewById(R.id.button_suche);
+
+
+        TimePickerDialog timeDialog;
+        timeDialog = new
+
+                TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                textViewTime.setText("" + selectedHour + ":" + selectedMinute);
+            }
+        }, hour, minute, true);//Yes 24 hour time
+        timeDialog.setTitle("Select Time");
+        timeDialog.show();
+
+        textViewTime = root.findViewById(R.id.textViewTime);
+        textViewTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View viewIn) {
+
+            }
+        });
+
+        textViewDate = root.findViewById(R.id.textViewDate);
+
+
         autoCompleteTextViewStart = root.findViewById(R.id.autoCompleteTextView_Starthaltestelle);
         autoCompleteTextViewZiel = root.findViewById(R.id.autoCompleteTextView_zielhaltestelle);
-        timePicker = (TimePicker) root.findViewById(R.id.timePicker);
-        timePicker.setIs24HourView(true);
+        //timePicker = (TimePicker) root.findViewById(R.id.timePicker);
+        //timePicker.setIs24HourView(true);
+        //datePicker = (DatePicker) root.findViewById(R.id.datePicker);
+        //datePicker.setCalendarViewShown(false);
 
-        datePicker = (DatePicker) root.findViewById(R.id.datePicker);
-        datePicker.setCalendarViewShown(false);
+        //Datum in TextView schreiben
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-        autoCompleteTextViewStart.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        textViewTime.setText(timeFormat.format(calendar.getTime()));
 
-            }
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+        int year = calendar.get(yearFormat.getCalendar().YEAR);
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
+        int monthInt = calendar.get(monthFormat.getCalendar().MONTH);
+        monthInt++;
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
+        int dayInt = calendar.get(dayFormat.getCalendar().DAY_OF_MONTH);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (autoCompleteTextViewStart.getText().length() >= 3) {
-                    jsonParse(autoCompleteTextViewStart);
-                }
-            }
+        String monthString = valueOf(monthInt);
+        String dayString = valueOf(dayInt);
 
-            @Override
-            public void afterTextChanged(Editable editable) {
+        if (monthInt < 10) {
+            monthString = "0" + monthInt;
+            Log.i("LUISA", "Month: " + monthString);
+        }
 
-            }
-        });
+        if (dayInt < 10) {
+            dayString = "0" + dayInt;
+            Log.i("LUISA", "Date: " + dayString);
+        }
 
-        autoCompleteTextViewZiel.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        String dateString = "" + dayString + ". " + monthString + ". " + year;
 
-            }
+        textViewDate.setText(dateString);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (autoCompleteTextViewZiel.getText().length() >= 3) {
-                    jsonParse(autoCompleteTextViewZiel);
-                }
-            }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
+        autoCompleteTextViewStart.addTextChangedListener(new
 
-            }
-        });
+                                                                 TextWatcher() {
+                                                                     @Override
+                                                                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+                                                                     }
+
+                                                                     @Override
+                                                                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                                                         if (autoCompleteTextViewStart.getText().length() >= 3) {
+                                                                             jsonParse(autoCompleteTextViewStart);
+                                                                         }
+                                                                     }
+
+                                                                     @Override
+                                                                     public void afterTextChanged(Editable editable) {
+
+                                                                     }
+                                                                 });
+
+        autoCompleteTextViewZiel.addTextChangedListener(new
+
+                                                                TextWatcher() {
+                                                                    @Override
+                                                                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                                                        if (autoCompleteTextViewZiel.getText().length() >= 3) {
+                                                                            jsonParse(autoCompleteTextViewZiel);
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void afterTextChanged(Editable editable) {
+
+                                                                    }
+                                                                });
 
 
         return root;
@@ -151,76 +217,38 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    @Override
-    public void onClick(View view) {
-        startHalt = autoCompleteTextViewStart.getText().toString();
-        zielHalt = autoCompleteTextViewZiel.getText().toString();
-        // set test values if user does not specify stops
-        if ((startHalt==null) || (startHalt.length()==0)) {
-            startHalt = "Hauptbahnhof, Karlsruhe";
-            stopIDList.put(startHalt, "de:08212:90");
-        }
-        if ((zielHalt==null) || (zielHalt.length()==0)){
-            zielHalt = "Marktplatz, Karlsruhe";
-            stopIDList.put(zielHalt,"de:08212:1");
-        }
 
-        day = datePicker.getDayOfMonth();
-        month = datePicker.getMonth() + 1;
-        year = datePicker.getYear();
-        //dateLinkParse(day, month, year);
+    public String dateLinkParse(int date, int month, int year) {
+        String monthString = valueOf(month);
+        String dateString = valueOf(date);
 
-
-        hour = timePicker.getHour();
-        minute = timePicker.getMinute();
-        // timeLinkParse(minute, hour);
-        //Log.i("LUISA",""+hour + minute);
-        //Log.i("LUISA", "Time: " + timeLinkParse(minute, hour));
-
-        Intent intentHalte = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(), LegListView.class);
-        intentHalte.putExtra(LegListView.KEY_Start,startHalt);
-        intentHalte.putExtra(LegListView.KEY_Ziel,zielHalt);
-                if(stopIDList.containsKey(startHalt)&&stopIDList.containsKey(zielHalt)){
-            intentHalte.putExtra(LegListView.KEY_Start_ID,stopIDList.get(startHalt));
-            intentHalte.putExtra(LegListView.KEY_Ziel_ID,stopIDList.get(zielHalt));
-            intentHalte.putExtra(LegListView.KEY_Date, dateLinkParse(day, month, year));
-            intentHalte.putExtra(LegListView.KEY_Time,timeLinkParse(minute, hour));
-            startActivity(intentHalte);
-        }
-
-    }
-
-    public String dateLinkParse (int date, int month, int year){
-        String monthString = String.valueOf(month);
-        String dateString = String.valueOf(date);
-
-        if (month < 10){
+        if (month < 10) {
             monthString = "0" + month;
             //Log.i("LUISA", "Month: " + monthString);
         }
 
-        if(date < 10){
+        if (date < 10) {
             dateString = "" + 0 + date;
             //Log.i("LUISA", "Date: " + dateString);
         }
 
-        String dateMonthYear = "" + year + monthString+ dateString;
+        String dateMonthYear = "" + year + monthString + dateString;
         //Log.i("LUISA", "methodeDatum: " +dateMonthYear);
         return dateMonthYear;
 
     }
 
-    public String timeLinkParse ( int minute, int hour){
-        String minuteString= String.valueOf(minute);
-        String hourString = String.valueOf(hour);
+    public String timeLinkParse(int minute, int hour) {
+        String minuteString = valueOf(minute);
+        String hourString = valueOf(hour);
 
-        if(hour < 10){
+        if (hour < 10) {
             hourString = "" + 0 + hour;
             //Log.i("LUISA", "Hour: " + hourString);
         }
 
-        if(minute< 10){
-            minuteString="" + 0 + minute;
+        if (minute < 10) {
+            minuteString = "" + 0 + minute;
             //Log.i("LUISA", "minute: " + minuteString);
         }
 
@@ -229,5 +257,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         //Log.i("LUISA", "Minute'Hour: " + minuteHour);
         return minuteHour;
     }
+
+
 
 }
