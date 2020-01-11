@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mapbox.mapboxsdk.annotations.Icon;
+
 import java.util.List;
 
 import wada1028.info3.oepnv_navigator.R;
@@ -46,7 +48,7 @@ public class CustomRouteListAdapter extends ArrayAdapter<Route> {
         textViewDepNameRoute.setText(actRoute.depName);
         textViewDestNameRoute.setText(actRoute.destName);
         if (actRoute.isFav.equals("N")){
-            imageButton.setImageResource(R.drawable.white_star);
+            final Icon icon = iconFactory.fromResource(R.drawable.flag);
         } else {
             imageButton.setImageResource(R.drawable.yellow_star);
         }
