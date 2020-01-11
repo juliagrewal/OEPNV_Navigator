@@ -12,12 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 
 import java.util.List;
 
 import wada1028.info3.oepnv_navigator.R;
 import wada1028.info3.oepnv_navigator.ui.db.Route;
 import wada1028.info3.oepnv_navigator.ui.home.HomeFragment.FavOnClickListener;
+import wada1028.info3.oepnv_navigator.ui.home.Routing_Activity;
 
 public class CustomRouteListAdapter extends ArrayAdapter<Route> {
     private List<Route> routeList;
@@ -47,8 +49,9 @@ public class CustomRouteListAdapter extends ArrayAdapter<Route> {
         Route actRoute = routeList.get(position);
         textViewDepNameRoute.setText(actRoute.depName);
         textViewDestNameRoute.setText(actRoute.destName);
+        IconFactory iconFactory = IconFactory.getInstance(getContext());
         if (actRoute.isFav.equals("N")){
-            final Icon icon = iconFactory.fromResource(R.drawable.flag);
+            final Icon emptyStar = iconFactory.fromResource(R.drawable.emptyStar);
         } else {
             imageButton.setImageResource(R.drawable.yellow_star);
         }
