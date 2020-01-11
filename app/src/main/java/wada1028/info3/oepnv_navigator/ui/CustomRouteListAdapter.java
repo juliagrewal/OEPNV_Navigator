@@ -21,11 +21,13 @@ import wada1028.info3.oepnv_navigator.ui.db.Route;
 import wada1028.info3.oepnv_navigator.ui.home.HomeFragment.FavOnClickListener;
 import wada1028.info3.oepnv_navigator.ui.home.Routing_Activity;
 
+import static wada1028.info3.oepnv_navigator.R.layout.routelistview_one_row;
+
 public class CustomRouteListAdapter extends ArrayAdapter<Route> {
     private List<Route> routeList;
 
     public CustomRouteListAdapter(Context context, List<Route> routeList) {
-        super(context, R.layout.routelistview_one_row,routeList);
+        super(context, routelistview_one_row,routeList);
         this.routeList = routeList;
     }
 
@@ -35,7 +37,7 @@ public class CustomRouteListAdapter extends ArrayAdapter<Route> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         //return super.getView(position, convertView, parent);
         if(convertView==null){
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.routelistview_one_row,parent,false);
+            convertView = LayoutInflater.from(getContext()).inflate(routelistview_one_row,parent,false);
         }
         TextView textViewDepNameRoute = (TextView)convertView.findViewById(R.id.textViewDepNameRoute);
         TextView textViewDestNameRoute = (TextView)convertView.findViewById(R.id.textViewDestNameRoute);
@@ -49,11 +51,10 @@ public class CustomRouteListAdapter extends ArrayAdapter<Route> {
         Route actRoute = routeList.get(position);
         textViewDepNameRoute.setText(actRoute.depName);
         textViewDestNameRoute.setText(actRoute.destName);
-        IconFactory iconFactory = IconFactory.getInstance(getContext());
         if (actRoute.isFav.equals("N")){
-            final Icon emptyStar = iconFactory.fromResource(R.drawable.emptyStar);
+            imageButton.setImageResource(R.drawable.ic_star_border);
         } else {
-            imageButton.setImageResource(R.drawable.yellow_star);
+            imageButton.setImageResource(R.drawable.ic_star_yellow);
         }
         imageButton.setOnClickListener(new FavOnClickListener(position, convertView));
         return convertView;
