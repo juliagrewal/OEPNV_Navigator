@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import wada1028.info3.oepnv_navigator.CustomListAdapter;
@@ -68,8 +69,8 @@ public class LegListView extends AppCompatActivity {
         zielHalte = getIntent().getStringExtra(KEY_Ziel);
         startHalteID = getIntent().getStringExtra(KEY_Start_ID);
         zielHalteID = getIntent().getStringExtra(KEY_Ziel_ID);
-        time = getIntent().getStringExtra(KEY_Time);
-        date = getIntent().getStringExtra(KEY_Date);
+        time = Objects.requireNonNull(getIntent().getStringExtra(KEY_Time));
+        date = Objects.requireNonNull(getIntent().getStringExtra(KEY_Date));
 
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
@@ -98,7 +99,7 @@ public class LegListView extends AppCompatActivity {
         String link_teil1 = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84%5bDD.DDDDD%5d&name_origin=";
         String link_teil2 = "&type_destination=stop&name_destination=";
         String link_teil3 = "&itdTime="+time;
-        String link_teil4 = "&itdDate="+date;
+        String link_teil4 = "&itdDateDayMonthYear="+date;
         String startHalteParam = "Error";
         String zielHalteParam = "Error";
         try{
