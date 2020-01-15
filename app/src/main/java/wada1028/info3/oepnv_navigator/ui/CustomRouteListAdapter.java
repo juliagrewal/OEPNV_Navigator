@@ -11,15 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mapbox.mapboxsdk.annotations.Icon;
-import com.mapbox.mapboxsdk.annotations.IconFactory;
-
 import java.util.List;
 
 import wada1028.info3.oepnv_navigator.R;
 import wada1028.info3.oepnv_navigator.ui.db.Route;
 import wada1028.info3.oepnv_navigator.ui.home.HomeFragment.FavOnClickListener;
-import wada1028.info3.oepnv_navigator.ui.home.Routing_Activity;
 
 import static wada1028.info3.oepnv_navigator.R.layout.routelistview_one_row;
 
