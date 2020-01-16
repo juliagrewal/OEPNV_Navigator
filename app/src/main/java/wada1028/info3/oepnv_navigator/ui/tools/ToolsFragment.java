@@ -23,53 +23,40 @@ public class ToolsFragment extends Fragment {
     MapView mapView;
     MapFragment mapFragment;
     LatLng karlsruhe;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_tools, container, false);
     }
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MapboxAccountManager.start(getContext(),getString(R.string.access_token));
+        MapboxAccountManager.start(getContext(), getString(R.string.access_token));
         mapView = (MapView) view.findViewById(R.id.mapViewTools);
-        karlsruhe = new LatLng(49,8);
-        MapboxMapOptions options = new MapboxMapOptions();
-        options.styleUrl(Style.LIGHT);
-        options.camera(new CameraPosition.Builder()
-                .target(karlsruhe)
-                .zoom(10)
-                .build());
-        mapFragment = MapFragment.newInstance(options);
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
+        karlsruhe = new LatLng(49.006889, 8.403653);
+        // MapboxMapOptions options = new MapboxMapOptions();
+        // options.styleUrl(Style.LIGHT);
+        // mapFragment. = MapFragment.newInstance(options);
+        mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
-
+                mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                        .zoom(11)
+                        .target(karlsruhe)
+                        .tilt(10)
+                        .build());
             }
         });
-
         mapView.onCreate(savedInstanceState);
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
     @Override
     public void onDestroy() {
+        mapView.onDestroy();
         super.onDestroy();
     }
-
     @Override
     public void onResume() {
         super.onResume();
+        mapView.onResume();
     }
     @Override
     public void onPause() {
@@ -81,7 +68,6 @@ public class ToolsFragment extends Fragment {
         super.onLowMemory();
         mapView.onLowMemory();
     }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
