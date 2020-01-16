@@ -8,7 +8,7 @@
     <!--string name="action_settings">Settings</string-->
     <string name="access_token">pk.eyJ1Ijoic2JydW5rIiwiYSI6ImNpamUwaTRvdzAwMmJ2Zmx5bTY1cGJrdzgifQ.-6YjnfjkAl1WrxHQLqRYdA</string>
     <string name="menu_verbindung">Verbindung</string>
-    <string name="menu_abfahrten">Abfahrten</string>
+    <string name="menu_impressum">Impressum</string>
     <string name="menu_liniennetzplan">Liniennetzplan</string>
     <string name="menu_karte">Karte</string>
 </resources>

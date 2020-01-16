@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 
-import wada1028.info3.oepnv_navigator.ui.home.ListView;
+import wada1028.info3.oepnv_navigator.ui.home.LegListView;
 
 
 public class CustomListAdapter extends ArrayAdapter <HashMap> {
@@ -49,8 +49,8 @@ public class CustomListAdapter extends ArrayAdapter <HashMap> {
         String transportModes = "";
         //Departure Output
         String departureTimeString =(String) legHashMap.get("departureTimePlanned0");
-        textViewDepTim.setText(ListView.dateParse(departureTimeString));
-        textViewDepLoc.setText(ListView.startHalte);
+        textViewDepTim.setText(LegListView.dateParse(departureTimeString));
+        textViewDepLoc.setText(LegListView.startHalte);
         //Transportation
         for(int i =0;i<lengthTransHashMap;i++){
             if(i>0){
@@ -61,8 +61,8 @@ public class CustomListAdapter extends ArrayAdapter <HashMap> {
         textViewTransport.setText(transportModes);
         //Arrival Output
         String arrivalTimeString = (String) legHashMap.get("arrivalTimePlanned"+((lengthLegHashMap/2)-1));
-        textViewArrTim.setText(ListView.dateParse(arrivalTimeString));
-        textViewArrLoc.setText(ListView.zielHalte);
+        textViewArrTim.setText(LegListView.dateParse(arrivalTimeString));
+        textViewArrLoc.setText(LegListView.zielHalte);
 
 
         return convertView;

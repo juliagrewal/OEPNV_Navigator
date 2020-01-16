@@ -29,9 +29,6 @@ import wada1028.info3.oepnv_navigator.Leg;
 import wada1028.info3.oepnv_navigator.R;
 public class Routing_Activity extends AppCompatActivity {
     public static String KEY_JourneyPosition = "JourneyPosition";
-    public static String startHalte;
-    public static String zielHalte;
-    public static String startHalteID;
     List<Leg> legList;
     List<List<LatLng>> trailList;
     MapView mapview;
@@ -42,10 +39,10 @@ public class Routing_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         MapboxAccountManager.start(this, getString(R.string.access_token));
         setContentView(R.layout.activity_routing_);
-        ListView listView = (ListView)findViewById(R.id.leg_listView_route);
-        mapview = (MapView)findViewById(R.id.mapView);
-        legList = new ArrayList<Leg>();
-        trailList = new ArrayList<List<LatLng>>();
+        ListView listView = findViewById(R.id.leg_listView_route);
+        mapview = findViewById(R.id.mapView);
+        legList = new ArrayList<>();
+        trailList = new ArrayList<>();
         int position = getIntent().getIntExtra(KEY_JourneyPosition,0);
         // Calling Application class (see application tag in AndroidManifest.xml)
         final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
@@ -123,7 +120,7 @@ public class Routing_Activity extends AppCompatActivity {
                                             mapboxMap.getUiSettings().setCompassEnabled(true);
                                             mapboxMap.getUiSettings().setAllGesturesEnabled(true);
                                             mapboxMap.setCameraPosition( new CameraPosition.Builder()
-                                                    .zoom(12)
+                                                    .zoom(11)
                                                     .target(center)
                                                     .tilt(10)
                                                     .build());

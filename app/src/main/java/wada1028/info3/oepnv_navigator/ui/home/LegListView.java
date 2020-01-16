@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -29,22 +28,27 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import wada1028.info3.oepnv_navigator.CustomListAdapter;
 import wada1028.info3.oepnv_navigator.R;
 
-public class ListView extends AppCompatActivity {
+public class LegListView extends AppCompatActivity {
 
     RequestQueue queue_Routing;
     public static String startHalte;
     public static String zielHalte;
     public static String startHalteID;
     public static String zielHalteID;
+    public static String time;
+    public static String date;
     public static final String KEY_Start = "StartName";
     public static final String KEY_Ziel  = "ZielName";
-    public static final String KEY_Start_ID   = "StartId";
-    public static final String KEY_Ziel_ID    = "ZielId";
+    public static final String KEY_Start_ID = "StartId";
+    public static final String KEY_Ziel_ID = "ZielId";
+    public static final String KEY_Date = "Date";
+    public static final String KEY_Time = "Time";
 
 
     List<HashMap> journeyList = new ArrayList<>();
@@ -58,13 +62,15 @@ public class ListView extends AppCompatActivity {
         // set empty journey list
         globalApplication.setJourneyList(journeyList);
         setContentView(R.layout.activity_list_view);
-        final android.widget.ListView listView = (android.widget.ListView)findViewById(R.id.listView_route);
+        final android.widget.ListView listView = findViewById(R.id.listView_route);
 
         queue_Routing = Volley.newRequestQueue(this);
         startHalte = getIntent().getStringExtra(KEY_Start);
         zielHalte = getIntent().getStringExtra(KEY_Ziel);
         startHalteID = getIntent().getStringExtra(KEY_Start_ID);
         zielHalteID = getIntent().getStringExtra(KEY_Ziel_ID);
+        time = Objects.requireNonNull(getIntent().getStringExtra(KEY_Time));
+        date = Objects.requireNonNull(getIntent().getStringExtra(KEY_Date));
 
         customListAdapter = new CustomListAdapter(this, journeyList);
         listView.setAdapter(customListAdapter);
@@ -73,12 +79,9 @@ public class ListView extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-    /*            Object o = listView.getItemAtPosition(position);
-                String str=(String)o;//As you are using Default String Adapter
-                Toast.makeText(getApplicationContext(),str,Toast.LENGTH_SHORT).show();
-*/
 
-                Intent mapIntent = new Intent(ListView.this,Routing_Activity.class);
+
+                Intent mapIntent = new Intent(LegListView.this,Routing_Activity.class);
                 mapIntent.putExtra(Routing_Activity.KEY_JourneyPosition,position);
                 startActivity(mapIntent);
 
@@ -95,6 +98,8 @@ public class ListView extends AppCompatActivity {
 
         String link_teil1 = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&coordOutputFormat=WGS84%5bDD.DDDDD%5d&name_origin=";
         String link_teil2 = "&type_destination=stop&name_destination=";
+        String link_teil3 = "&itdTime="+time;
+        String link_teil4 = "&itdDateDayMonthYear="+date;
         String startHalteParam = "Error";
         String zielHalteParam = "Error";
         try{
@@ -110,7 +115,7 @@ public class ListView extends AppCompatActivity {
             Log.e("DANI","Can not encode ZielHalteID");
         }
 
-        String fertigerLink = link_teil1 + startHalteParam + link_teil2 + zielHalteParam;
+        String fertigerLink = link_teil1 + startHalteParam + link_teil2 + zielHalteParam+ link_teil3 + link_teil4;
         Log.i("DANI",""+fertigerLink);
 
         final JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, fertigerLink, null, new Response.Listener<JSONObject>() {

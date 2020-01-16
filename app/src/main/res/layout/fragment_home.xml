@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="320dp"
-        android:layout_height="178dp"
+        android:layout_height="158dp"
         android:layout_marginTop="57dp"
         android:layout_marginBottom="6dp"
         android:gravity="top"
@@ -58,23 +58,84 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/textViewDateTimeTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Abfahrt"
+        android:textAlignment="textStart"
+        android:textAllCaps="true"
+        android:textColor="#FFBB33"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <TextView
+        android:id="@+id/textViewDateTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="XX.MMM.YYYY XX:XX Uhr"
+        android:textAlignment="textStart"
+        app:layout_constraintStart_toEndOf="@+id/textViewDateTimeTitle"
+        app:layout_constraintTop_toTopOf="@+id/textViewDateTimeTitle" />
+
     <Button
         android:id="@+id/button_suche"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="152dp"
         android:layout_height="54dp"
         android:layout_marginStart="162dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="162dp"
-        android:layout_marginBottom="376dp"
         android:background="#FFBB33"
         android:text="Suche"
         android:textAllCaps="true"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDateTimeTitle" />
+
+    <View
+        android:id="@+id/dividerVerlauf1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="#FFC107"
+        app:layout_constraintTop_toBottomOf="@+id/button_suche" />
+
+    <TextView
+        android:id="@+id/textViewVerlauf"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Frühere Anfragen:"
+        android:textAlignment="textStart"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerVerlauf1" />
+
+    <View
+        android:id="@+id/dividerVerlauf2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/textViewVerlauf" />
+
+
+    <ListView
+        android:id="@+id/route_listView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/dividerVerlauf2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

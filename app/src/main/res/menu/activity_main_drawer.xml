@@ -7,19 +7,23 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_verbindungen"
+            android:iconTint="#6FFFFFFF"
             android:title="@string/menu_verbindung" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_abfahrten"
-            android:title="@string/menu_abfahrten" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_liniennetz"
+            android:iconTint="#6FFFFFFF"
             android:title="@string/menu_liniennetzplan" />
         <item
             android:id="@+id/nav_tools"
             android:icon="@drawable/ic_karte"
+            android:iconTint="#6FFFFFFF"
             android:title="@string/menu_karte" />
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_dehaze_black_24dp"
+            android:iconTint="#6FFFFFFF"
+            android:title="@string/menu_impressum" />
     </group>
 
 

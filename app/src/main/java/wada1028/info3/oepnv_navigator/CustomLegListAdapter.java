@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import wada1028.info3.oepnv_navigator.ui.home.ListView;
+import wada1028.info3.oepnv_navigator.ui.home.LegListView;
 
 public class CustomLegListAdapter extends ArrayAdapter <Leg> {
     private List<Leg> legList;
@@ -37,9 +37,9 @@ public class CustomLegListAdapter extends ArrayAdapter <Leg> {
         //Liste auslesen
         Leg actLeg = legList.get(position);
         textViewDepLocLeg.setText(actLeg.depName);
-        textViewDepTimLeg.setText(ListView.dateParse(actLeg.depTime));
+        textViewDepTimLeg.setText(LegListView.dateParse(actLeg.depTime));
         textViewArrLocLeg.setText(actLeg.desName);
-        textViewArrTimLeg.setText(ListView.dateParse(actLeg.desTime));
+        textViewArrTimLeg.setText(LegListView.dateParse(actLeg.desTime));
         textViewTransport.setText(actLeg.transMode);
         return convertView;
 
