@@ -39,7 +39,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/email_impressum"
-        android:textColor="#FFBB33" />
+        android:textColor="#FFBB33"
+        android:clickable="true"/>
 </LinearLayout>
     <TextView
         android:id="@+id/text_rechtsform"

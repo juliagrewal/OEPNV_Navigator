@@ -1,5 +1,6 @@
 package wada1028.info3.oepnv_navigator.ui.gallery;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,18 @@ public class GalleryFragment extends Fragment {
         final TextView textViewEmailemail= root.findViewById(R.id.text_emailemail);
         final TextView textViewEmail= root.findViewById(R.id.text_email);
         final TextView textViewRechtsform= root.findViewById(R.id.text_rechtsform);
+        textViewEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                emailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                emailIntent.setType("vnd.android.cursor.item/email");
+                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] {"OEPNVnavigator@gmail.com"});
+                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "My Email Subject");
+                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "My email content");
+                startActivity(Intent.createChooser(emailIntent, "Send mail using..."));
+            }
+        });
 
 
         return root;
