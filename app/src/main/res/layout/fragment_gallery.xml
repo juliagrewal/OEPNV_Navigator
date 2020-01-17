@@ -1,15 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/text_gallery"
-        android:layout_width="0dp"
-        android:layout_height="35dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:id="@+id/text_titel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Impressum"
+        android:textColor="#FFBB33"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text_anschrift"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/anschrift_impressum" />
+
+    <TextView
+        android:id="@+id/text_kontakt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/kontakt_impressunm" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView
+        android:id="@+id/text_emailemail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/emailemail_impressum" />
+
+    <TextView
+        android:id="@+id/text_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/email_impressum"
+        android:textColor="#FFBB33" />
+</LinearLayout>
+    <TextView
+        android:id="@+id/text_rechtsform"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rechtsform_impressum" />
+</androidx.appcompat.widget.LinearLayoutCompat>
