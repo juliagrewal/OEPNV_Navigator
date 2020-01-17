@@ -22,13 +22,13 @@ public class GalleryFragment extends Fragment {
         galleryViewModel =
                 ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        final TextView textView = root.findViewById(R.id.text_gallery);
-        galleryViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        final TextView textViewAnschrift = root.findViewById(R.id.text_anschrift);
+        final TextView textViewKontakt =root.findViewById(R.id.text_kontakt);
+        final TextView textViewEmailemail= root.findViewById(R.id.text_emailemail);
+        final TextView textViewEmail= root.findViewById(R.id.text_email);
+        final TextView textViewRechtsform= root.findViewById(R.id.text_rechtsform);
+
+
         return root;
     }
 }
