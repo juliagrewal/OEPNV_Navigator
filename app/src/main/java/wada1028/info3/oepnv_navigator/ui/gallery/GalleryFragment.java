@@ -33,11 +33,12 @@ public class GalleryFragment extends Fragment {
             public void onClick(View v) {
                 Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
                 emailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                emailIntent.addCategory(Intent.CATEGORY_APP_EMAIL);
                 emailIntent.setType("vnd.android.cursor.item/email");
                 emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] {"OEPNVnavigator@gmail.com"});
                 emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "My Email Subject");
                 emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "My email content");
-                startActivity(Intent.createChooser(emailIntent, "Send mail using..."));
+                startActivity(Intent.createChooser(emailIntent, "E-mail senden mit..."));
             }
         });
 
