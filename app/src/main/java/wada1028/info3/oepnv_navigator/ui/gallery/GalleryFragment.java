@@ -1,7 +1,9 @@
 package wada1028.info3.oepnv_navigator.ui.gallery;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +19,10 @@ public class GalleryFragment extends Fragment {
 
 
     private GalleryViewModel galleryViewModel;
+    private String email = "OEPNVnavigator@gmail.com";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
+                             ViewGroup container, Bundle savedInstanceState) {
         galleryViewModel =
                 ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
@@ -31,13 +34,13 @@ public class GalleryFragment extends Fragment {
         textViewEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-                emailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                emailIntent.addCategory(Intent.CATEGORY_APP_EMAIL);
-                emailIntent.setType("vnd.android.cursor.item/email");
-                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] {"OEPNVnavigator@gmail.com"});
-                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "My Email Subject");
-                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "My email content");
+                Uri uri = Uri.parse("mailto:" + email)
+                        .buildUpon()
+                        .appendQueryParameter("subject", "My Email Subject")
+                        .appendQueryParameter("body","My email content" )
+                        .build();
+
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
                 startActivity(Intent.createChooser(emailIntent, "E-mail senden mit..."));
             }
         });
