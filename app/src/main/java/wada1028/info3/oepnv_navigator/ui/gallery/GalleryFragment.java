@@ -36,8 +36,8 @@ public class GalleryFragment extends Fragment {
             public void onClick(View v) {
                 Uri uri = Uri.parse("mailto:" + email)
                         .buildUpon()
-                        .appendQueryParameter("subject", "My Email Subject")
-                        .appendQueryParameter("body","My email content" )
+                        .appendQueryParameter("subject", "Rückmeldung zur ÖPNV Navigator App")
+                        .appendQueryParameter("to",email)
                         .build();
 
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
