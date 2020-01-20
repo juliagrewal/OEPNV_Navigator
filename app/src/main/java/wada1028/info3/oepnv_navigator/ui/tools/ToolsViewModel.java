@@ -12,6 +12,7 @@ public class ToolsViewModel extends ViewModel {
         mText = new MutableLiveData<>();
         
         mText.setValue("Hier ist eine Erweiterung möglich");
+
     }
 
     public LiveData<String> getText() {
