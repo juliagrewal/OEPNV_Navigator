@@ -112,6 +112,7 @@ public class Routing_Activity extends AppCompatActivity {
         IconFactory iconFactory = IconFactory.getInstance(Routing_Activity.this);
         final Icon icon = iconFactory.fromResource(R.drawable.flag);
 
+
         mapview.getMapAsync(new
                                     OnMapReadyCallback() {
                                         @Override
