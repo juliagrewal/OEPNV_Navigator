@@ -109,6 +109,7 @@ public class Routing_Activity extends AppCompatActivity {
             polylineOptionsList.add(polylineOptions);
         }
 
+
         IconFactory iconFactory = IconFactory.getInstance(Routing_Activity.this);
         final Icon icon = iconFactory.fromResource(R.drawable.flag);
 
